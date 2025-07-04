@@ -1,0 +1,247 @@
+<script setup lang="ts">
+import axios from 'axios'
+import { AlertCircle, CheckCircle2, Eye, EyeOff, Lock, Mail } from 'lucide-vue-next'
+import { reactive, ref } from 'vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
+// Form state
+const formData = reactive({
+  email: '',
+  password: '',
+})
+
+// UI state
+const showPassword = ref(false)
+const isLoading = ref(false)
+const errors = ref<Record<string, string>>({})
+const successMessage = ref('')
+
+// Validation rules
+const validateForm = () => {
+  errors.value = {}
+
+  if (!formData.email) {
+    errors.value.email = 'Email is required'
+  } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+    errors.value.email = 'Please enter a valid email address'
+  }
+
+  if (!formData.password) {
+    errors.value.password = 'Password is required'
+  } else if (formData.password.length < 8) {
+    errors.value.password = 'Password must be at least 8 characters'
+  }
+
+  return Object.keys(errors.value).length === 0
+}
+
+// Form submission
+const handleSubmit = async () => {
+  if (!validateForm()) return
+
+  isLoading.value = true
+  errors.value = {}
+  successMessage.value = ''
+
+  try {
+    const response = await axios.post('http://localhost:3000/api/login', {
+      email: formData.email,
+      password: formData.password,
+    })
+
+    // Store the token
+    localStorage.setItem('authToken', response.data.token)
+
+    // Show success message
+    successMessage.value = 'Login successful! Redirecting...'
+
+    // Redirect to dashboard after a short delay
+    setTimeout(() => {
+      router.push('/dashboard')
+    }, 1000)
+  } catch (error: any) {
+    console.error('Login error:', error)
+
+    if (error.response?.status === 429) {
+      errors.value.general = 'Too many login attempts. Please try again later.'
+    } else if (error.response?.status === 423) {
+      errors.value.general = 'Account temporarily locked due to multiple failed attempts.'
+    } else if (error.response?.status === 401) {
+      errors.value.general = 'Invalid email or password.'
+    } else {
+      errors.value.general = 'Login failed. Please try again.'
+    }
+  } finally {
+    isLoading.value = false
+  }
+}
+
+// Clear specific field error on input
+const clearFieldError = (field: string) => {
+  if (errors.value[field]) {
+    delete errors.value[field]
+  }
+}
+</script>
+
+<template>
+  <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8">
+      <!-- Header -->
+      <div class="text-center">
+        <div
+          class="mx-auto h-12 w-12 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center"
+        >
+          <Lock class="h-6 w-6 text-primary-600 dark:text-primary-400" />
+        </div>
+        <h2 class="mt-6 text-3xl font-bold text-gray-900 dark:text-white">
+          Sign in to your account
+        </h2>
+        <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+          Don't have an account?
+          <RouterLink
+            to="/signup"
+            class="font-medium text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300"
+          >
+            Sign up here
+          </RouterLink>
+        </p>
+      </div>
+
+      <!-- Login Form -->
+      <div class="card animate-fade-in">
+        <form @submit.prevent="handleSubmit" class="space-y-6 p-8">
+          <!-- General Error Message -->
+          <div
+            v-if="errors.general"
+            class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md p-4"
+          >
+            <div class="flex items-center">
+              <AlertCircle class="h-5 w-5 text-red-400 mr-2" />
+              <span class="text-sm text-red-700 dark:text-red-400">{{ errors.general }}</span>
+            </div>
+          </div>
+
+          <!-- Success Message -->
+          <div
+            v-if="successMessage"
+            class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-md p-4"
+          >
+            <div class="flex items-center">
+              <CheckCircle2 class="h-5 w-5 text-green-400 mr-2" />
+              <span class="text-sm text-green-700 dark:text-green-400">{{ successMessage }}</span>
+            </div>
+          </div>
+
+          <!-- Email Field -->
+          <div>
+            <label
+              for="email"
+              class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+            >
+              Email address
+            </label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Mail class="h-5 w-5 text-gray-400" />
+              </div>
+              <input
+                id="email"
+                v-model="formData.email"
+                @input="clearFieldError('email')"
+                type="email"
+                autocomplete="email"
+                required
+                class="input pl-10"
+                :class="{ 'border-red-500 focus:ring-red-500': errors.email }"
+                placeholder="Enter your email"
+              />
+            </div>
+            <p v-if="errors.email" class="mt-1 text-sm text-red-600 dark:text-red-400">
+              {{ errors.email }}
+            </p>
+          </div>
+
+          <!-- Password Field -->
+          <div>
+            <label
+              for="password"
+              class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+            >
+              Password
+            </label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Lock class="h-5 w-5 text-gray-400" />
+              </div>
+              <input
+                id="password"
+                v-model="formData.password"
+                @input="clearFieldError('password')"
+                :type="showPassword ? 'text' : 'password'"
+                autocomplete="current-password"
+                required
+                class="input pl-10 pr-10"
+                :class="{ 'border-red-500 focus:ring-red-500': errors.password }"
+                placeholder="Enter your password"
+              />
+              <button
+                type="button"
+                @click="showPassword = !showPassword"
+                class="absolute inset-y-0 right-0 pr-3 flex items-center"
+              >
+                <Eye v-if="showPassword" class="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                <EyeOff v-else class="h-5 w-5 text-gray-400 hover:text-gray-600" />
+              </button>
+            </div>
+            <p v-if="errors.password" class="mt-1 text-sm text-red-600 dark:text-red-400">
+              {{ errors.password }}
+            </p>
+          </div>
+
+          <!-- Forgot Password Link -->
+          <div class="flex items-center justify-between">
+            <div class="text-sm">
+              <a
+                href="#"
+                class="font-medium text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300"
+              >
+                Forgot your password?
+              </a>
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <button
+            type="submit"
+            :disabled="isLoading"
+            class="btn btn-primary w-full py-3 text-base font-medium relative"
+          >
+            <div v-if="isLoading" class="spinner w-5 h-5 mr-2"></div>
+            {{ isLoading ? 'Signing in...' : 'Sign in' }}
+          </button>
+        </form>
+      </div>
+
+      <!-- Additional Info -->
+      <div class="text-center">
+        <p class="text-xs text-gray-500 dark:text-gray-400">
+          By signing in, you agree to our
+          <a href="#" class="text-primary-600 hover:text-primary-500 dark:text-primary-400"
+            >Terms of Service</a
+          >
+          and
+          <a href="#" class="text-primary-600 hover:text-primary-500 dark:text-primary-400"
+            >Privacy Policy</a
+          >
+        </p>
+      </div>
+    </div>
+  </div>
+</template>
+
+<style scoped>
+/* Component-specific styles */
+</style>
