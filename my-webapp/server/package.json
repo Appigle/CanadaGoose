@@ -6,8 +6,8 @@
     "test": "test"
   },
   "scripts": {
-    "start": "node app.js",
-    "dev": "nodemon app.js",
+    "start": "PORT=3000 node app.js",
+    "dev": "PORT=3000 nodemon app.js",
     "test": "NODE_ENV=test mocha test/*.js --timeout 5000"
   },
   "keywords": [

@@ -212,7 +212,7 @@ const handleSubmit = async () => {
         <button
           data-cy="submit-button"
           type="submit"
-          class="btn btn-primary w-full flex justify-center items-center"
+          class="btn btn-primary w-full h-10 flex justify-center items-center"
           :disabled="isLoading"
         >
           <span v-if="isLoading" class="loader mr-2"></span>
