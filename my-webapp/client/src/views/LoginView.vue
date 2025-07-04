@@ -51,19 +51,13 @@ const handleSubmit = async () => {
       password: formData.password,
     })
 
-    // Store the token
     localStorage.setItem('authToken', response.data.token)
-
-    // Show success message
     successMessage.value = 'Login successful! Redirecting...'
 
-    // Redirect to dashboard after a short delay
     setTimeout(() => {
       router.push('/dashboard')
     }, 1000)
   } catch (error: any) {
-    console.error('Login error:', error)
-
     if (error.response?.status === 429) {
       errors.value.general = 'Too many login attempts. Please try again later.'
     } else if (error.response?.status === 423) {
@@ -78,7 +72,6 @@ const handleSubmit = async () => {
   }
 }
 
-// Clear specific field error on input
 const clearFieldError = (field: string) => {
   if (errors.value[field]) {
     delete errors.value[field]
@@ -112,10 +105,11 @@ const clearFieldError = (field: string) => {
 
       <!-- Login Form -->
       <div class="card animate-fade-in">
-        <form @submit.prevent="handleSubmit" class="space-y-6 p-8">
-          <!-- General Error Message -->
+        <form @submit.prevent="handleSubmit" class="space-y-6 p-8" data-cy="login-form">
+          <!-- General Error -->
           <div
             v-if="errors.general"
+            data-cy="general-error"
             class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md p-4"
           >
             <div class="flex items-center">
@@ -127,6 +121,7 @@ const clearFieldError = (field: string) => {
           <!-- Success Message -->
           <div
             v-if="successMessage"
+            data-cy="success-message"
             class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-md p-4"
           >
             <div class="flex items-center">
@@ -149,17 +144,21 @@ const clearFieldError = (field: string) => {
               </div>
               <input
                 id="email"
+                data-cy="email-input"
                 v-model="formData.email"
                 @input="clearFieldError('email')"
                 type="email"
                 autocomplete="email"
-                required
                 class="input pl-10"
                 :class="{ 'border-red-500 focus:ring-red-500': errors.email }"
                 placeholder="Enter your email"
               />
             </div>
-            <p v-if="errors.email" class="mt-1 text-sm text-red-600 dark:text-red-400">
+            <p
+              v-if="errors.email"
+              class="mt-1 text-sm text-red-600 dark:text-red-400"
+              data-cy="email-error"
+            >
               {{ errors.email }}
             </p>
           </div>
@@ -178,11 +177,11 @@ const clearFieldError = (field: string) => {
               </div>
               <input
                 id="password"
+                data-cy="password-input"
                 v-model="formData.password"
                 @input="clearFieldError('password')"
                 :type="showPassword ? 'text' : 'password'"
                 autocomplete="current-password"
-                required
                 class="input pl-10 pr-10"
                 :class="{ 'border-red-500 focus:ring-red-500': errors.password }"
                 placeholder="Enter your password"
@@ -196,27 +195,20 @@ const clearFieldError = (field: string) => {
                 <EyeOff v-else class="h-5 w-5 text-gray-400 hover:text-gray-600" />
               </button>
             </div>
-            <p v-if="errors.password" class="mt-1 text-sm text-red-600 dark:text-red-400">
+            <p
+              v-if="errors.password"
+              class="mt-1 text-sm text-red-600 dark:text-red-400"
+              data-cy="password-error"
+            >
               {{ errors.password }}
             </p>
-          </div>
-
-          <!-- Forgot Password Link -->
-          <div class="flex items-center justify-between">
-            <div class="text-sm">
-              <a
-                href="#"
-                class="font-medium text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300"
-              >
-                Forgot your password?
-              </a>
-            </div>
           </div>
 
           <!-- Submit Button -->
           <button
             type="submit"
             :disabled="isLoading"
+            data-cy="submit-button"
             class="btn btn-primary w-full py-3 text-base font-medium relative"
           >
             <div v-if="isLoading" class="spinner w-5 h-5 mr-2"></div>
@@ -224,24 +216,6 @@ const clearFieldError = (field: string) => {
           </button>
         </form>
       </div>
-
-      <!-- Additional Info -->
-      <div class="text-center">
-        <p class="text-xs text-gray-500 dark:text-gray-400">
-          By signing in, you agree to our
-          <a href="#" class="text-primary-600 hover:text-primary-500 dark:text-primary-400"
-            >Terms of Service</a
-          >
-          and
-          <a href="#" class="text-primary-600 hover:text-primary-500 dark:text-primary-400"
-            >Privacy Policy</a
-          >
-        </p>
-      </div>
     </div>
   </div>
 </template>
-
-<style scoped>
-/* Component-specific styles */
-</style>

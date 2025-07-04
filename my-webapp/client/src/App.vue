@@ -84,7 +84,7 @@ const navigateToProfile = () => {
             <button
               @click="toggleDark()"
               class="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-              :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
+              aria-label="Toggle theme"
             >
               <Sun v-if="isDark" class="h-5 w-5 text-yellow-500" />
               <Moon v-else class="h-5 w-5 text-gray-600" />
