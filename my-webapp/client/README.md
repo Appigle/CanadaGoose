@@ -66,3 +66,41 @@ This project uses **Cypress** for end-to-end and UI testing.
 ```sh
 npm run lint
 ```
+
+# Selenium E2E Testing
+
+## Prerequisites
+
+- Python 3.7+
+- Google Chrome browser (for ChromeDriver)
+
+## Setup (First Time)
+
+```sh
+cd selenium/e2e
+python3 -m venv venv
+source venv/bin/activate
+pip install selenium webdriver-manager
+```
+
+## Running All Selenium E2E Tests
+
+1. Make sure your frontend (`npm run dev`) and backend are running.
+2. In the `selenium/e2e` directory, run:
+   ```sh
+   chmod +x test.run.sh
+   ./test.run.sh
+   ```
+   This will run all `test_*.py` scripts sequentially.
+
+## Running a Single Test
+
+```sh
+python test_signup.py
+```
+
+## Notes
+
+- The scripts automatically hide Vue DevTools overlays to prevent click errors.
+- If you see `pip: command not found`, make sure your venv is activated and Python is installed.
+- You can add more E2E tests by creating new `test_*.py` files in this directory.
