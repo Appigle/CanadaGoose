@@ -18,7 +18,7 @@ A fullstack web application with enhanced security and modern UX features.
 
 ### Prerequisites
 
-- Node.js 18+
+- Node.js 20+
 - Docker & Docker Compose
 - Git
 

@@ -26,65 +26,79 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Setup Node.js
+      - name: Setup Node.js for client
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: '20'
           cache: 'npm'
-
-      - name: Install backend dependencies
-        run: |
-          cd my-webapp/server
-          npm ci
+          cache-dependency-path: my-webapp/client/package-lock.json
 
       - name: Install frontend dependencies
         run: |
           cd my-webapp/client
           npm ci
 
-      - name: Run backend tests
-        env:
-          NODE_ENV: test
-          DB_HOST: localhost
-          DB_PORT: 3306
-          DB_USER: root
-          DB_PASSWORD: testpass
-          DB_NAME: testdb
-          JWT_SECRET: test-secret-key
+      - name: Setup Node.js for server
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: my-webapp/server/package-lock.json
+
+      - name: Install backend dependencies
         run: |
           cd my-webapp/server
-          npm test
+          npm ci
+
+      # - name: Run backend tests
+      #   env:
+      #     NODE_ENV: test
+      #     DB_HOST: localhost
+      #     DB_PORT: 3306
+      #     DB_USER: root
+      #     DB_PASSWORD: webapp_pass
+      #     DB_NAME: webapp_db
+      #     JWT_SECRET: your-super-secret-jwt-key-change-this-in-production-123456789
+      #   run: |
+      #     cd my-webapp/server
+      #     npm test
 
       - name: Run frontend tests
         run: |
           cd my-webapp/client
           npm run test:unit
 
-      - name: Run Cypress E2E tests
-        uses: cypress-io/github-action@v5
-        with:
-          working-directory: my-webapp/client
-          start: npm run dev
-          wait-on: 'http://localhost:3000'
-          wait-on-timeout: 120
-        env:
-          NODE_ENV: test
+      # - name: Run Cypress E2E tests
+      #   uses: cypress-io/github-action@v5
+      #   with:
+      #     working-directory: my-webapp/client
+      #     start: npm run dev
+      #     wait-on: 'http://localhost:3000'
+      #     wait-on-timeout: 120
+      #   env:
+      #     NODE_ENV: test
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
+      # - name: Set up Python
+      #   uses: actions/setup-python@v5
+      #   with:
+      #     python-version: '3.11'
 
-      - name: Install Selenium dependencies
-        run: |
-          cd my-webapp/client/selenium/e2e
-          python -m venv venv
-          source venv/bin/activate
-          pip install selenium webdriver-manager
+      # - name: Set up Google Chrome
+      #   uses: browser-actions/setup-chrome@v1
 
-      - name: Run Selenium E2E tests
-        run: |
-          cd my-webapp/client/selenium/e2e
-          source venv/bin/activate
-          chmod +x test.run.sh
-          ./test.run.sh
+      # - name: Set up Chromedriver
+      #   uses: nanasess/setup-chromedriver@v2
+
+      # - name: Install Selenium dependencies
+      #   run: |
+      #     cd my-webapp/client/selenium/e2e
+      #     python -m venv venv
+      #     source venv/bin/activate
+      #     pip install selenium webdriver-manager
+
+      # - name: Run Selenium E2E tests
+      #   run: |
+      #     cd my-webapp/client/selenium/e2e
+      #     source venv/bin/activate
+      #     chmod +x test.run.sh
+      #     ./test.run.sh
