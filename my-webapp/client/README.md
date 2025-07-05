@@ -35,7 +35,7 @@ Here’s your **integrated `README.md`** that combines the **project intro for C
 
 ## 📸 Preview
 
-![CanadaGoose Dashboard](./public/mockup-dashboard.png)
+![CanadaGoose Dashboard](./public/dashboard.png)
 
 ---
 
