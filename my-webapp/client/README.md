@@ -1,8 +1,3 @@
-Here’s your **integrated `README.md`** that combines the **project intro for CanadaGoose** and all the **original setup/testing instructions** in a polished, developer- and user-friendly format:
-
----
-
-````markdown
 # 🇨🇦 CanadaGoose – Smart Personal Finance Tracker
 
 **CanadaGoose** is a modern, AI-powered personal finance web application that helps you take control of your money. Designed with a clean and stylish user interface, CanadaGoose makes it easy for young professionals and budget-conscious individuals in Canada to log daily income and expenses, understand spending habits, and get actionable insights — all in one place.
@@ -59,7 +54,6 @@ Use [`vue-tsc`](https://github.com/vuejs/language-tools) for proper type-checkin
 ```bash
 npm install
 ```
-````
 
 ### 🔄 Compile and Hot-Reload for Development
 
@@ -162,7 +156,3 @@ We welcome contributions! Feel free to fork the repo and submit pull requests or
 ## 📄 License
 
 MIT License © 2025 CG Group
-
-```
-
-```
