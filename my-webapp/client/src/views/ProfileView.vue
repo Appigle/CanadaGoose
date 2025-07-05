@@ -1,28 +1,10 @@
 <script setup lang="ts">
-import axios from 'axios'
+import { useAuthStore } from '@/stores/auth'
 import { Mail, Settings, User } from 'lucide-vue-next'
-import { onMounted, ref } from 'vue'
 
-const user = ref<any>(null)
-const isLoading = ref(true)
-
-const loadUserData = async () => {
-  try {
-    const token = localStorage.getItem('authToken')
-    const response = await axios.get('http://localhost:3000/api/me', {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-    user.value = response.data.user
-  } catch (error) {
-    console.error('Failed to load user data:', error)
-  } finally {
-    isLoading.value = false
-  }
-}
-
-onMounted(() => {
-  loadUserData()
-})
+const auth = useAuthStore()
+const user = auth.user
+const isLoading = auth.loading
 </script>
 
 <template>
@@ -45,7 +27,7 @@ onMounted(() => {
               <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ user?.username }}</h1>
               <p class="text-gray-600 dark:text-gray-400">{{ user?.email }}</p>
               <div class="mt-4">
-                <button class="btn btn-primary">
+                <button class="btn btn-primary py-2 px-4">
                   <Settings class="h-4 w-4 mr-2" />
                   Edit Profile
                 </button>

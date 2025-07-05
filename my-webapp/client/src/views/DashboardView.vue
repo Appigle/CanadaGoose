@@ -1,28 +1,10 @@
 <script setup lang="ts">
-import axios from 'axios'
+import { useAuthStore } from '@/stores/auth'
 import { User } from 'lucide-vue-next'
-import { onMounted, ref } from 'vue'
 
-const user = ref<any>(null)
-const isLoading = ref(true)
-
-const loadUserData = async () => {
-  try {
-    const token = localStorage.getItem('authToken')
-    const response = await axios.get('http://localhost:3000/api/me', {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-    user.value = response.data.user
-  } catch (error) {
-    console.error('Failed to load user data:', error)
-  } finally {
-    isLoading.value = false
-  }
-}
-
-onMounted(() => {
-  loadUserData()
-})
+const auth = useAuthStore()
+const user = auth.user
+const isLoading = auth.loading
 </script>
 
 <template>

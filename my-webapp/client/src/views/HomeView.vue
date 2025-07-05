@@ -1,206 +1,70 @@
-<script setup lang="ts">
-import { CheckCircle, Lock, Shield, Users, Zap } from 'lucide-vue-next'
-</script>
+<script setup lang="ts"></script>
 
 <template>
   <div class="min-h-screen">
     <!-- Hero Section -->
-    <section class="relative overflow-hidden py-20 sm:py-32">
-      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div class="mx-auto max-w-2xl text-center">
-          <div class="mb-8">
-            <div
-              class="mx-auto h-16 w-16 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center"
-            >
-              <Shield class="h-8 w-8 text-primary-600 dark:text-primary-400" />
-            </div>
-          </div>
-          <h1 class="text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-6xl">
-            Secure Authentication
-            <span class="text-primary-600 dark:text-primary-400">Made Simple</span>
-          </h1>
-          <p class="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-400">
-            Experience enterprise-grade security with a beautiful, modern interface. Built with Vue
-            3, TypeScript, and cutting-edge security practices.
+    <!-- Hero Section -->
+    <section class="bg-gradient-to-b from-primary-50 to-white dark:from-gray-900 dark:to-gray-950">
+      <div class="max-w-7xl mx-auto px-4 py-20 flex flex-col md:flex-row items-center gap-12">
+        <div class="flex-1">
+          <h2 class="text-4xl md:text-5xl font-extrabold tracking-tight leading-tight">
+            Take Control of Your Finances with <span class="text-primary-600">CanadaGoose</span>
+          </h2>
+          <p class="mt-6 text-lg text-gray-600 dark:text-gray-300">
+            Track expenses, log income, and get smart financial insights powered by AI — all in one
+            sleek, modern dashboard.
           </p>
-          <div class="mt-10 flex items-center justify-center gap-x-6">
-            <RouterLink to="/signup" class="btn btn-primary px-8 py-3 text-base">
-              Get Started
+          <div class="mt-8 flex space-x-4">
+            <RouterLink
+              to="/signup"
+              class="btn btn-primary px-6 py-3 rounded-lg text-white text-lg bg-primary-600 hover:bg-primary-700"
+            >
+              Get Started Free
             </RouterLink>
-            <RouterLink to="/login" class="btn btn-ghost px-8 py-3 text-base"> Sign In </RouterLink>
+            <RouterLink
+              to="/demo"
+              class="text-lg px-6 py-3 underline hover:text-primary-600 dark:hover:text-primary-400"
+            >
+              See a Demo
+            </RouterLink>
           </div>
+        </div>
+        <div class="flex-1">
+          <!-- Replace with actual screenshot/animation -->
+          <img
+            src="/dashboard.png"
+            alt="CanadaGoose Dashboard Preview"
+            class="rounded-2xl shadow-xl w-full"
+          />
         </div>
       </div>
     </section>
 
     <!-- Features Section -->
-    <section class="py-24 sm:py-32">
-      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div class="mx-auto max-w-2xl text-center">
-          <h2 class="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
-            Built for Security
-          </h2>
-          <p class="mt-4 text-lg leading-8 text-gray-600 dark:text-gray-400">
-            Modern authentication features that keep your data safe while providing an excellent
-            user experience.
-          </p>
-        </div>
-        <div class="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
-          <dl class="grid max-w-xl grid-cols-1 gap-x-8 gap-y-16 lg:max-w-none lg:grid-cols-3">
-            <!-- Feature 1 -->
-            <div class="flex flex-col">
-              <div
-                class="mb-6 flex h-10 w-10 items-center justify-center rounded-lg bg-primary-600"
-              >
-                <Lock class="h-6 w-6 text-white" />
-              </div>
-              <dt class="text-base font-semibold leading-7 text-gray-900 dark:text-white">
-                Enterprise Security
-              </dt>
-              <dd
-                class="mt-1 flex flex-auto flex-col text-base leading-7 text-gray-600 dark:text-gray-400"
-              >
-                <p class="flex-auto">
-                  Advanced password policies, account locking, and rate limiting protect against
-                  brute force attacks.
-                </p>
-              </dd>
-            </div>
-
-            <!-- Feature 2 -->
-            <div class="flex flex-col">
-              <div
-                class="mb-6 flex h-10 w-10 items-center justify-center rounded-lg bg-primary-600"
-              >
-                <Users class="h-6 w-6 text-white" />
-              </div>
-              <dt class="text-base font-semibold leading-7 text-gray-900 dark:text-white">
-                User Experience
-              </dt>
-              <dd
-                class="mt-1 flex flex-auto flex-col text-base leading-7 text-gray-600 dark:text-gray-400"
-              >
-                <p class="flex-auto">
-                  Beautiful dark/light themes, real-time validation, and intuitive interface design.
-                </p>
-              </dd>
-            </div>
-
-            <!-- Feature 3 -->
-            <div class="flex flex-col">
-              <div
-                class="mb-6 flex h-10 w-10 items-center justify-center rounded-lg bg-primary-600"
-              >
-                <Zap class="h-6 w-6 text-white" />
-              </div>
-              <dt class="text-base font-semibold leading-7 text-gray-900 dark:text-white">
-                Modern Stack
-              </dt>
-              <dd
-                class="mt-1 flex flex-auto flex-col text-base leading-7 text-gray-600 dark:text-gray-400"
-              >
-                <p class="flex-auto">
-                  Built with Vue 3, TypeScript, Tailwind CSS, and Express.js for optimal
-                  performance.
-                </p>
-              </dd>
-            </div>
-          </dl>
-        </div>
-      </div>
-    </section>
-
-    <!-- Security Features -->
-    <section class="bg-gray-50 dark:bg-gray-900 py-24 sm:py-32">
-      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div class="mx-auto max-w-2xl lg:text-center">
-          <h2 class="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
-            Security Features
-          </h2>
-          <p class="mt-4 text-lg leading-8 text-gray-600 dark:text-gray-400">
-            Comprehensive security measures protect your account and data.
-          </p>
-        </div>
-        <div class="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-4xl">
-          <dl
-            class="grid max-w-xl grid-cols-1 gap-x-8 gap-y-10 lg:max-w-none lg:grid-cols-2 lg:gap-y-16"
-          >
-            <div class="relative pl-16">
-              <dt class="text-base font-semibold leading-7 text-gray-900 dark:text-white">
-                <div
-                  class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-primary-600"
-                >
-                  <CheckCircle class="h-6 w-6 text-white" />
-                </div>
-                Password Strength Validation
-              </dt>
-              <dd class="mt-2 text-base leading-7 text-gray-600 dark:text-gray-400">
-                Real-time password strength checking with visual feedback and security requirements.
-              </dd>
-            </div>
-            <div class="relative pl-16">
-              <dt class="text-base font-semibold leading-7 text-gray-900 dark:text-white">
-                <div
-                  class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-primary-600"
-                >
-                  <Shield class="h-6 w-6 text-white" />
-                </div>
-                Account Protection
-              </dt>
-              <dd class="mt-2 text-base leading-7 text-gray-600 dark:text-gray-400">
-                Automatic account locking after multiple failed login attempts with time-based
-                recovery.
-              </dd>
-            </div>
-            <div class="relative pl-16">
-              <dt class="text-base font-semibold leading-7 text-gray-900 dark:text-white">
-                <div
-                  class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-primary-600"
-                >
-                  <Lock class="h-6 w-6 text-white" />
-                </div>
-                JWT Authentication
-              </dt>
-              <dd class="mt-2 text-base leading-7 text-gray-600 dark:text-gray-400">
-                Secure token-based authentication with automatic expiration and refresh
-                capabilities.
-              </dd>
-            </div>
-            <div class="relative pl-16">
-              <dt class="text-base font-semibold leading-7 text-gray-900 dark:text-white">
-                <div
-                  class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-primary-600"
-                >
-                  <Zap class="h-6 w-6 text-white" />
-                </div>
-                Rate Limiting
-              </dt>
-              <dd class="mt-2 text-base leading-7 text-gray-600 dark:text-gray-400">
-                Advanced rate limiting prevents brute force attacks and protects server resources.
-              </dd>
-            </div>
-          </dl>
-        </div>
-      </div>
-    </section>
-
-    <!-- CTA Section -->
-    <section class="py-24 sm:py-32">
-      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div class="mx-auto max-w-2xl text-center">
-          <h2 class="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
-            Ready to get started?
-          </h2>
-          <p class="mt-4 text-lg leading-8 text-gray-600 dark:text-gray-400">
-            Join thousands of users who trust our secure authentication platform.
-          </p>
-          <div class="mt-10 flex items-center justify-center gap-x-6">
-            <RouterLink to="/signup" class="btn btn-primary px-8 py-3 text-base">
-              Create Account
-            </RouterLink>
-            <RouterLink to="/about" class="btn btn-ghost px-8 py-3 text-base">
-              Learn More
-            </RouterLink>
+    <section class="py-16 bg-white dark:bg-gray-950 border-t border-gray-100 dark:border-gray-800">
+      <div class="max-w-6xl mx-auto px-4">
+        <h3 class="text-3xl font-bold text-center mb-12">Why Choose CanadaGoose?</h3>
+        <div class="grid md:grid-cols-3 gap-8">
+          <div class="text-center">
+            <TrendingUp class="mx-auto h-12 w-12 mb-4 text-primary-600 dark:text-primary-400" />
+            <h4 class="text-xl font-semibold">Smart Expense Tracking</h4>
+            <p class="text-gray-600 dark:text-gray-400 mt-2">
+              Categorize your daily spending with ease and gain insights on where your money goes.
+            </p>
+          </div>
+          <div class="text-center">
+            <Wallet class="mx-auto h-12 w-12 mb-4 text-primary-600 dark:text-primary-400" />
+            <h4 class="text-xl font-semibold">Track Your Income</h4>
+            <p class="text-gray-600 dark:text-gray-400 mt-2">
+              Log salary, freelance work, or side hustle income — all in one place.
+            </p>
+          </div>
+          <div class="text-center">
+            <Sparkles class="mx-auto h-12 w-12 mb-4 text-primary-600 dark:text-primary-400" />
+            <h4 class="text-xl font-semibold">AI-Powered Insights</h4>
+            <p class="text-gray-600 dark:text-gray-400 mt-2">
+              Let our AI analyze your habits and recommend smarter budgeting strategies.
+            </p>
           </div>
         </div>
       </div>

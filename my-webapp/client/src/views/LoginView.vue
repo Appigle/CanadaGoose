@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import axios from 'axios'
+import { useAuthStore } from '@/stores/auth'
 import { AlertCircle, CheckCircle2, Eye, EyeOff, Lock, Mail } from 'lucide-vue-next'
-import { reactive, ref } from 'vue'
+import { reactive, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
+const auth = useAuthStore()
 
 // Form state
 const formData = reactive({
@@ -14,7 +15,6 @@ const formData = reactive({
 
 // UI state
 const showPassword = ref(false)
-const isLoading = ref(false)
 const errors = ref<Record<string, string>>({})
 const successMessage = ref('')
 
@@ -37,38 +37,42 @@ const validateForm = () => {
   return Object.keys(errors.value).length === 0
 }
 
+// Watch for login success
+watch(
+  () => auth.isAuthenticated,
+  (isAuth) => {
+    console.log('%c [ isAuth ]-44', 'font-size:13px; background:pink; color:#bf2c9f;', isAuth)
+    if (isAuth) {
+      successMessage.value = 'Login successful! Redirecting...'
+      setTimeout(() => {
+        router.push('/dashboard')
+      }, 1000)
+    }
+  },
+)
+
 // Form submission
 const handleSubmit = async () => {
   if (!validateForm()) return
 
-  isLoading.value = true
   errors.value = {}
   successMessage.value = ''
 
-  try {
-    const response = await axios.post('http://localhost:3000/api/login', {
-      email: formData.email,
-      password: formData.password,
-    })
+  await auth.login({
+    email: formData.email,
+    password: formData.password,
+  })
 
-    localStorage.setItem('authToken', response.data.token)
-    successMessage.value = 'Login successful! Redirecting...'
-
-    setTimeout(() => {
-      router.push('/dashboard')
-    }, 1000)
-  } catch (error: any) {
-    if (error.response?.status === 429) {
+  if (auth.error) {
+    if (auth.error.includes('429')) {
       errors.value.general = 'Too many login attempts. Please try again later.'
-    } else if (error.response?.status === 423) {
+    } else if (auth.error.includes('423')) {
       errors.value.general = 'Account temporarily locked due to multiple failed attempts.'
-    } else if (error.response?.status === 401) {
+    } else if (auth.error.includes('401') || auth.error.includes('Invalid')) {
       errors.value.general = 'Invalid email or password.'
     } else {
-      errors.value.general = 'Login failed. Please try again.'
+      errors.value.general = auth.error
     }
-  } finally {
-    isLoading.value = false
   }
 }
 
@@ -207,12 +211,12 @@ const clearFieldError = (field: string) => {
           <!-- Submit Button -->
           <button
             type="submit"
-            :disabled="isLoading"
+            :disabled="auth.loading"
             data-cy="submit-button"
             class="btn btn-primary w-full py-3 text-base font-medium relative"
           >
-            <div v-if="isLoading" class="spinner w-5 h-5 mr-2"></div>
-            {{ isLoading ? 'Signing in...' : 'Sign in' }}
+            <div v-if="auth.loading" class="spinner w-5 h-5 mr-2"></div>
+            {{ auth.loading ? 'Signing in...' : 'Sign in' }}
           </button>
         </form>
       </div>

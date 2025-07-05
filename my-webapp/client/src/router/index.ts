@@ -13,38 +13,38 @@ const router = createRouter({
     {
       path: '/login',
       name: 'login',
-      component: () => import('../views/LoginView.vue'),
+      component: () => import('@/views/LoginView.vue'),
       meta: { requiresAuth: false, redirectIfAuthenticated: true },
     },
     {
       path: '/signup',
       name: 'signup',
-      component: () => import('../views/SignupView.vue'),
+      component: () => import('@/views/SignupView.vue'),
       meta: { requiresAuth: false, redirectIfAuthenticated: true },
     },
     {
       path: '/dashboard',
       name: 'dashboard',
-      component: () => import('../views/DashboardView.vue'),
+      component: () => import('@/views/DashboardView.vue'),
       meta: { requiresAuth: true },
     },
     {
       path: '/profile',
       name: 'profile',
-      component: () => import('../views/ProfileView.vue'),
+      component: () => import('@/views/ProfileView.vue'),
       meta: { requiresAuth: true },
     },
     {
       path: '/about',
       name: 'about',
-      component: () => import('../views/AboutView.vue'),
+      component: () => import('@/views/AboutView.vue'),
       meta: { requiresAuth: false },
     },
     // Catch-all route for 404 errors
     {
       path: '/:pathMatch(.*)*',
       name: 'NotFound',
-      component: () => import('../views/NotFoundView.vue'),
+      component: () => import('@/views/NotFoundView.vue'),
       meta: { requiresAuth: false },
     },
   ],
@@ -52,7 +52,7 @@ const router = createRouter({
 
 // Route guards for authentication
 router.beforeEach((to, from, next) => {
-  const isAuthenticated = !!localStorage.getItem('authToken')
+  const isAuthenticated = !!localStorage.getItem('auth_token')
 
   // Check if route requires authentication
   if (to.meta.requiresAuth && !isAuthenticated) {

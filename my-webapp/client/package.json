@@ -12,8 +12,8 @@
     "type-check": "vue-tsc --build",
     "lint": "eslint . --fix",
     "format": "prettier --write src/",
-    "cypress:open": "cypress open",
-    "cypress:run": "cypress run"
+    "cypress:open": "VITE_DISABLE_DEVTOOLS=true cypress open",
+    "cypress:run": "VITE_DISABLE_DEVTOOLS=true cypress run"
   },
   "dependencies": {
     "@vueuse/core": "^13.5.0",

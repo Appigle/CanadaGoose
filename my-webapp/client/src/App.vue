@@ -1,8 +1,9 @@
 <script setup lang="ts">
+import { useAuthStore } from '@/stores/auth'
 import { useDark, useToggle } from '@vueuse/core'
-import { LogOut, Moon, Shield, Sun, User } from 'lucide-vue-next'
-import { onMounted, ref } from 'vue'
-import { RouterView, useRouter } from 'vue-router'
+import { LogOut, Moon, Sun } from 'lucide-vue-next'
+import { storeToRefs } from 'pinia'
+import { useRouter } from 'vue-router'
 
 // Theme management
 const isDark = useDark()
@@ -10,21 +11,11 @@ const toggleDark = useToggle(isDark)
 
 // Navigation state
 const router = useRouter()
-const isAuthenticated = ref(false) // This will be managed by Pinia store later
-
-// Mock user data (will be replaced with Pinia store)
-const user = ref({ username: '', email: '' })
-
-// Check authentication status on mount
-onMounted(() => {
-  // Check for stored auth token
-  const token = localStorage.getItem('authToken')
-  isAuthenticated.value = !!token
-})
+const auth = useAuthStore()
+const { isAuthenticated, user } = storeToRefs(auth)
 
 const handleLogout = () => {
-  localStorage.removeItem('authToken')
-  isAuthenticated.value = false
+  auth.logout()
   router.push('/login')
 }
 
@@ -34,88 +25,64 @@ const navigateToProfile = () => {
 </script>
 
 <template>
-  <div id="app" class="min-h-screen gradient-bg transition-colors duration-300">
-    <!-- Header Navigation -->
+  <div
+    id="app"
+    class="min-h-screen flex flex-col bg-white dark:bg-gray-950 transition-colors duration-300 text-gray-800 dark:text-gray-100"
+  >
+    <!-- Header -->
     <header
-      class="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50"
+      class="bg-white/90 dark:bg-gray-900/80 backdrop-blur-md sticky top-0 z-50 border-b border-gray-200 dark:border-gray-700"
     >
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between items-center h-16">
-          <!-- Logo and Brand -->
-          <div class="flex items-center space-x-3">
-            <Shield class="h-8 w-8 text-primary-600 dark:text-primary-400" />
-            <h1 class="text-xl font-bold text-gray-900 dark:text-white">SecureAuth</h1>
-          </div>
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16">
+        <div class="flex items-center space-x-2">
+          <img src="/logo.png" alt="CanadaGoose" class="h-8 w-8" />
+          <span class="text-xl font-bold tracking-tight">CanadaGoose</span>
+        </div>
 
-          <!-- Navigation Links -->
-          <nav class="hidden md:flex items-center space-x-8">
-            <RouterLink
-              to="/"
-              class="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-            >
-              Home
-            </RouterLink>
-            <RouterLink
-              v-if="!isAuthenticated"
-              to="/login"
-              class="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-            >
-              Login
-            </RouterLink>
-            <RouterLink
-              v-if="!isAuthenticated"
-              to="/signup"
-              class="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-            >
-              Sign Up
-            </RouterLink>
-            <RouterLink
-              v-if="isAuthenticated"
-              to="/dashboard"
-              class="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-            >
-              Dashboard
-            </RouterLink>
-          </nav>
+        <nav class="hidden md:flex space-x-6 text-sm">
+          <RouterLink to="/" class="hover:text-primary-600 dark:hover:text-primary-400"
+            >Home</RouterLink
+          >
+          <RouterLink to="/features" class="hover:text-primary-600 dark:hover:text-primary-400"
+            >Features</RouterLink
+          >
+          <RouterLink
+            to="/dashboard"
+            v-if="isAuthenticated"
+            class="hover:text-primary-600 dark:hover:text-primary-400"
+            >Dashboard</RouterLink
+          >
+        </nav>
 
-          <!-- User Menu & Theme Toggle -->
-          <div class="flex items-center space-x-4">
-            <!-- Theme Toggle -->
-            <button
-              @click="toggleDark()"
-              class="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-              aria-label="Toggle theme"
-            >
-              <Sun v-if="isDark" class="h-5 w-5 text-yellow-500" />
-              <Moon v-else class="h-5 w-5 text-gray-600" />
+        <div class="flex items-center space-x-4">
+          <button
+            @click="toggleDark()"
+            class="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+            aria-label="Toggle theme"
+          >
+            <Sun v-if="isDark" class="h-5 w-5 text-yellow-500" />
+            <Moon v-else class="h-5 w-5 text-gray-600" />
+          </button>
+          <template v-if="isAuthenticated">
+            <button @click="navigateToProfile" class="text-sm hover:underline">
+              {{ user?.username }}
             </button>
-
-            <!-- User Menu (when authenticated) -->
-            <div v-if="isAuthenticated" class="flex items-center space-x-3">
-              <button
-                @click="navigateToProfile"
-                class="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-              >
-                <User class="h-5 w-5 text-gray-600 dark:text-gray-400" />
-                <span class="hidden sm:block text-sm text-gray-700 dark:text-gray-300">
-                  Profile
-                </span>
-              </button>
-              <button
-                @click="handleLogout"
-                class="flex items-center space-x-2 p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400 transition-colors"
-              >
-                <LogOut class="h-5 w-5" />
-                <span class="hidden sm:block text-sm">Logout</span>
-              </button>
-            </div>
-
-            <!-- Auth Buttons (when not authenticated) -->
-            <div v-else class="flex items-center space-x-3">
-              <RouterLink to="/login" class="btn btn-ghost px-4 py-2"> Login </RouterLink>
-              <RouterLink to="/signup" class="btn btn-primary px-4 py-2"> Sign Up </RouterLink>
-            </div>
-          </div>
+            <button
+              @click="handleLogout"
+              class="text-sm text-red-600 hover:underline flex items-center"
+            >
+              <LogOut class="h-4 w-4 mr-2" />
+              Logout
+            </button>
+          </template>
+          <template v-else>
+            <RouterLink to="/login" class="text-sm hover:underline">Login</RouterLink>
+            <RouterLink
+              to="/signup"
+              class="btn btn-primary px-4 py-2 rounded-md text-white bg-primary-600 hover:bg-primary-700"
+              >Sign Up</RouterLink
+            >
+          </template>
         </div>
       </div>
     </header>
@@ -127,36 +94,16 @@ const navigateToProfile = () => {
 
     <!-- Footer -->
     <footer
-      class="bg-white/50 dark:bg-gray-900/50 backdrop-blur-md border-t border-gray-200 dark:border-gray-700 mt-auto"
+      class="mt-auto py-6 border-t border-gray-200 dark:border-gray-700 bg-white/70 dark:bg-gray-900/60 backdrop-blur-md"
     >
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div class="flex flex-col md:flex-row justify-between items-center">
-          <div class="flex items-center space-x-2 mb-4 md:mb-0">
-            <Shield class="h-5 w-5 text-primary-600 dark:text-primary-400" />
-            <span class="text-sm text-gray-600 dark:text-gray-400">
-              SecureAuth © 2025 - Enterprise Security Solution
-            </span>
-          </div>
-          <div class="flex items-center space-x-6">
-            <a
-              href="#"
-              class="text-sm text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
-            >
-              Privacy Policy
-            </a>
-            <a
-              href="#"
-              class="text-sm text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
-            >
-              Terms of Service
-            </a>
-            <a
-              href="#"
-              class="text-sm text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
-            >
-              Support
-            </a>
-          </div>
+      <div
+        class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center text-sm text-gray-600 dark:text-gray-400"
+      >
+        <div class="mb-4 md:mb-0">© 2025 CanadaGoose. All rights reserved.</div>
+        <div class="flex space-x-4">
+          <a href="#" class="hover:underline">Privacy Policy</a>
+          <a href="#" class="hover:underline">Terms of Service</a>
+          <a href="#" class="hover:underline">Support</a>
         </div>
       </div>
     </footer>
@@ -171,5 +118,20 @@ const navigateToProfile = () => {
 
 .router-link-exact-active {
   @apply text-primary-600 dark:text-primary-400 font-semibold;
+}
+
+/* Custom primary theme colors if not defined in tailwind.config.js */
+.btn-primary {
+  @apply bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg shadow transition-all duration-300;
+}
+
+.gradient-bg {
+  background: linear-gradient(to bottom right, #e0f2fe, #ffffff);
+}
+
+@media (prefers-color-scheme: dark) {
+  .gradient-bg {
+    background: linear-gradient(to bottom right, #1e293b, #0f172a);
+  }
 }
 </style>

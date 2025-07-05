@@ -1,106 +1,168 @@
-# client
+Here’s your **integrated `README.md`** that combines the **project intro for CanadaGoose** and all the **original setup/testing instructions** in a polished, developer- and user-friendly format:
 
-This template should help get you started developing with Vue 3 in Vite.
+---
 
-## Recommended IDE Setup
+````markdown
+# 🇨🇦 CanadaGoose – Smart Personal Finance Tracker
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+**CanadaGoose** is a modern, AI-powered personal finance web application that helps you take control of your money. Designed with a clean and stylish user interface, CanadaGoose makes it easy for young professionals and budget-conscious individuals in Canada to log daily income and expenses, understand spending habits, and get actionable insights — all in one place.
 
-## Type Support for `.vue` Imports in TS
+---
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+## 🚀 Features
 
-## Customize configuration
+- ✅ **Track Daily Expenses & Income** – Categorize transactions by groceries, rent, salary, restaurants, and more.
+- 🤖 **AI-Powered Financial Analysis** – Gain smart insights into your spending habits, overspending warnings, and monthly trends.
+- 📊 **Visual Dashboards** – Interactive charts and graphs that help you instantly understand your financial health.
+- 💡 **Budgeting Goals** – Set monthly savings or spending goals and track your progress visually.
+- 🌙 **Dark Mode Ready** – Seamless experience in both light and dark environments.
+- 📱 **Responsive Design** – Optimized for both desktop and mobile users.
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+---
 
-## Project Setup
+## 🧰 Tech Stack
 
-```sh
+- **Frontend:** Vue 3 + TypeScript + Vite + Tailwind CSS
+- **State Management:** Pinia
+- **Routing:** Vue Router
+- **AI Integration:** Custom AI insight engine
+- **Testing:** Vitest (unit), Cypress (E2E), Selenium (cross-browser)
+- **Authentication:** JWT-based login/signup
+- **Backend:** Node.js / Express (optional)
+- **Database:** MySQL
+
+---
+
+## 📸 Preview
+
+![CanadaGoose Dashboard](./public/mockup-dashboard.png)
+
+---
+
+## ⚙️ Development Setup
+
+This project uses [Vite](https://vitejs.dev/) + Vue 3 + TypeScript.
+
+### Recommended IDE Setup
+
+- [VSCode](https://code.visualstudio.com/)
+- [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (disable Vetur)
+
+### Type Support for `.vue` Files in TS
+
+Use [`vue-tsc`](https://github.com/vuejs/language-tools) for proper type-checking and enable Volar for IDE support.
+
+---
+
+## 📦 Project Setup
+
+```bash
 npm install
 ```
+````
 
-### Compile and Hot-Reload for Development
+### 🔄 Compile and Hot-Reload for Development
 
-```sh
+```bash
 npm run dev
 ```
 
-### Type-Check, Compile and Minify for Production
+### ✅ Type-Check, Compile and Minify for Production
 
-```sh
+```bash
 npm run build
 ```
 
-### Run Unit Tests with [Vitest](https://vitest.dev/)
+### 🧪 Run Unit Tests with [Vitest](https://vitest.dev/)
 
-```sh
+```bash
 npm run test:unit
 ```
 
-# E2E/UI Testing
+---
+
+## 🧪 E2E/UI Testing with Cypress
 
 This project uses **Cypress** for end-to-end and UI testing.
 
-## Running Cypress
+### Run Cypress
 
-1. Start your dev server:
-   ```sh
-   npm run dev
-   ```
-2. In another terminal, open Cypress:
-   ```sh
-   npx cypress open
-   ```
-   or run headless:
-   ```sh
-   npx cypress run
-   ```
+```bash
+# Start the dev server
+npm run dev
 
-## Test Directory
-
-- Cypress tests are located in the `cypress/` directory.
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
+# In another terminal:
+npx cypress open
+# or run headless
+npx cypress run
 ```
 
-# Selenium E2E Testing
+### Test Directory
 
-## Prerequisites
+Cypress tests are located in the `cypress/` directory.
+
+---
+
+## 🧪 Selenium E2E Testing (Cross-Browser)
+
+### Prerequisites
 
 - Python 3.7+
 - Google Chrome browser (for ChromeDriver)
 
-## Setup (First Time)
+### Setup (First Time Only)
 
-```sh
+```bash
 cd selenium/e2e
 python3 -m venv venv
 source venv/bin/activate
 pip install selenium webdriver-manager
 ```
 
-## Running All Selenium E2E Tests
+### Run All Selenium E2E Tests
 
-1. Make sure your frontend (`npm run dev`) and backend are running.
-2. In the `selenium/e2e` directory, run:
-   ```sh
-   chmod +x test.run.sh
-   ./test.run.sh
-   ```
-   This will run all `test_*.py` scripts sequentially.
+Ensure your frontend (`npm run dev`) and backend are running, then:
 
-## Running a Single Test
+```bash
+cd selenium/e2e
+chmod +x test.run.sh
+./test.run.sh
+```
 
-```sh
+### Run a Single Selenium Test
+
+```bash
 python test_signup.py
 ```
 
-## Notes
+### Notes
 
-- The scripts automatically hide Vue DevTools overlays to prevent click errors.
-- If you see `pip: command not found`, make sure your venv is activated and Python is installed.
-- You can add more E2E tests by creating new `test_*.py` files in this directory.
+- Vue DevTools overlays are hidden automatically to prevent click errors.
+- If `pip` isn't found, ensure your virtual environment is activated and Python is correctly installed.
+- Add more E2E tests by creating new `test_*.py` files in the `selenium/e2e/` directory.
+
+---
+
+## 🗺️ Roadmap
+
+- [ ] Recurring transactions
+- [ ] AI budgeting assistant
+- [ ] CSV import/export
+- [ ] Email alerts and summaries
+- [ ] Localization (Chinese/English)
+
+---
+
+## 🙌 Contributing
+
+We welcome contributions! Feel free to fork the repo and submit pull requests or open issues for suggestions.
+
+---
+
+## 📄 License
+
+MIT License © 2025 CG Group
+
+```
+
+```

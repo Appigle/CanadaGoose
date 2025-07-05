@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import axios from 'axios'
+import { useAuthStore } from '@/stores/auth'
 import { AlertCircle, CheckCircle2, Eye, EyeOff, User } from 'lucide-vue-next'
-import { computed, reactive, ref } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
+const auth = useAuthStore()
 
 const formData = reactive({
   username: '',
@@ -15,7 +16,6 @@ const formData = reactive({
 
 const showPassword = ref(false)
 const showConfirmPassword = ref(false)
-const isLoading = ref(false)
 const errors = ref<Record<string, string>>({})
 const successMessage = ref('')
 
@@ -60,33 +60,34 @@ const validateForm = () => {
   return Object.keys(errors.value).length === 0
 }
 
+// Watch for signup success
+watch(
+  () => auth.isAuthenticated,
+  (isAuth) => {
+    if (isAuth) {
+      successMessage.value = 'Account created successfully! Redirecting...'
+      setTimeout(() => router.push('/dashboard'), 1000)
+    }
+  },
+)
+
 const handleSubmit = async () => {
   if (!validateForm()) return
 
-  isLoading.value = true
   successMessage.value = ''
 
-  try {
-    const response = await axios.post('http://localhost:3000/api/signup', {
-      username: formData.username,
-      email: formData.email,
-      password: formData.password,
-    })
+  await auth.signup({
+    username: formData.username,
+    email: formData.email,
+    password: formData.password,
+  })
 
-    localStorage.setItem('authToken', response.data.token)
-    successMessage.value = 'Account created successfully! Redirecting...'
-    setTimeout(() => router.push('/dashboard'), 1000)
-  } catch (error: any) {
-    if (error.response?.status === 400) {
-      const msg = error.response.data.error
-      errors.value.general = msg.includes('User already exists')
-        ? 'An account with this email or username already exists.'
-        : msg
+  if (auth.error) {
+    if (auth.error.includes('already exists')) {
+      errors.value.general = 'An account with this email or username already exists.'
     } else {
-      errors.value.general = 'Registration failed. Please try again.'
+      errors.value.general = auth.error
     }
-  } finally {
-    isLoading.value = false
   }
 }
 </script>
@@ -99,8 +100,10 @@ const handleSubmit = async () => {
         <div class="mx-auto h-12 w-12 bg-primary-100 rounded-full flex items-center justify-center">
           <User class="h-6 w-6 text-primary-600" />
         </div>
-        <h2 class="mt-6 text-3xl font-bold text-gray-900">Create your account</h2>
-        <p class="mt-2 text-sm text-gray-600">
+        <h2 class="mt-6 text-3xl font-bold text-gray-600 dark:text-gray-200">
+          Create your account
+        </h2>
+        <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
           Already have an account?
           <RouterLink to="/login" class="text-primary-600 hover:underline">Sign in here</RouterLink>
         </p>
@@ -213,10 +216,10 @@ const handleSubmit = async () => {
           data-cy="submit-button"
           type="submit"
           class="btn btn-primary w-full h-10 flex justify-center items-center"
-          :disabled="isLoading"
+          :disabled="auth.loading"
         >
-          <span v-if="isLoading" class="loader mr-2"></span>
-          {{ isLoading ? 'Creating account...' : 'Create account' }}
+          <span v-if="auth.loading" class="loader mr-2"></span>
+          {{ auth.loading ? 'Creating account...' : 'Create account' }}
         </button>
       </form>
     </div>
