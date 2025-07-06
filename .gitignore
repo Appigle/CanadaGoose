@@ -1,2 +1,3 @@
 my-webapp/server/node_modules
 my-webapp/client/venv
+.DS_Store

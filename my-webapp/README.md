@@ -64,6 +64,8 @@ A fullstack web application with enhanced security and modern UX features.
 
    # E2E tests
    npm run cypress:open
+
+   ./test.run.sh -> selenium test
    ```
 
 ## 🧱 Tech Stack
