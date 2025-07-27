@@ -1,11 +1,11 @@
-# 🚀 My WebApp - Vue 3 + Express + MySQL
+# 🚀 CanadaGoose - Vue 3 + Express + MySQL
 
 A fullstack web application with enhanced security and modern UX features.
 
 ## 🏗️ Project Structure
 
 ```
-/my-webapp
+/CanadaGoose
   /client               # Vue 3 frontend (Vite + Tailwind + Pinia + Axios + TypeScript + ShadcnUI)
   /server               # Express.js backend (JWT + bcrypt + MySQL + Rate Limiting)
   /e2e-tests            # Selenium test scripts (Python + MySQL validation)
@@ -28,7 +28,7 @@ A fullstack web application with enhanced security and modern UX features.
 
    ```bash
    git clone <your-repo>
-   cd my-webapp
+   cd CanadaGoose
    ```
 
 2. **Start database:**

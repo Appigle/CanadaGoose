@@ -1,2 +1,7 @@
 my-webapp/server/node_modules
 my-webapp/client/venv
+.DS_Store
+.cursor
+docs
+*node_modules*
+Assignment3.pdf
