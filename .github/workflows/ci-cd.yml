@@ -142,12 +142,12 @@ jobs:
         ports:
           - 3306:3306
         options: >-
-          --health-cmd="mysqladmin ping"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=3
+          --health-cmd="mysqladmin ping -h localhost -u root -prootpass"
+          --health-interval=30s
+          --health-timeout=10s
+          --health-retries=5
         volumes:
-          - ./CanadaGoose/server/database/init.sql:/docker-entrypoint-initdb.d/init.sql
+          - ${{ github.workspace }}/CanadaGoose/server/database/init.sql:/docker-entrypoint-initdb.d/init.sql
 
     steps:
       - uses: actions/checkout@v4
@@ -171,18 +171,59 @@ jobs:
           cd CanadaGoose/client && npm ci
           cd ../server && npm ci
 
+      - name: Install MySQL client tools
+        run: |
+          echo "🔧 Installing MySQL client tools..."
+          sudo apt-get update
+          sudo apt-get install -y mysql-client
+          echo "✅ MySQL client tools installed"
+
       - name: Setup and initialize database
         run: |
           echo "🔧 Setting up database schema..."
           cd CanadaGoose/server
 
-          # Wait for MySQL to be ready
+          # Wait for MySQL to be ready with better error handling
           echo "⏳ Waiting for MySQL to be ready..."
-          timeout 60 bash -c 'until mysql -h localhost -P 3306 -u root -prootpass -e "SELECT 1" >/dev/null 2>&1; do sleep 2; done'
+          for i in {1..30}; do
+            if mysql -h localhost -P 3306 -u root -prootpass -e "SELECT 1" >/dev/null 2>&1; then
+              echo "✅ MySQL is ready!"
+              break
+            fi
+            echo "⏳ Attempt $i/30: MySQL not ready yet, waiting..."
+            sleep 5
+          done
+
+          # Check if MySQL is accessible
+          if ! mysql -h localhost -P 3306 -u root -prootpass -e "SELECT 1" >/dev/null 2>&1; then
+            echo "❌ MySQL is not accessible after 30 attempts"
+            echo "🔍 Checking MySQL container status..."
+            docker ps -a
+            exit 1
+          fi
 
           # Initialize database schema
           echo "📊 Initializing database schema..."
-          mysql -h localhost -P 3306 -u root -prootpass webapp_db < database/init.sql
+          if [ -f "database/init.sql" ]; then
+            mysql -h localhost -P 3306 -u root -prootpass webapp_db < database/init.sql
+            echo "✅ Database schema initialized from init.sql"
+          else
+            echo "⚠️  init.sql not found, creating basic schema..."
+            mysql -h localhost -P 3306 -u root -prootpass webapp_db << 'EOF'
+            CREATE TABLE IF NOT EXISTS users (
+              id INT AUTO_INCREMENT PRIMARY KEY,
+              username VARCHAR(255) UNIQUE NOT NULL,
+              email VARCHAR(255) UNIQUE NOT NULL,
+              password VARCHAR(255) NOT NULL,
+              created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+            EOF
+            echo "✅ Basic database schema created"
+          fi
+
+          # Verify tables exist
+          echo "🔍 Verifying database tables..."
+          mysql -h localhost -P 3306 -u root -prootpass webapp_db -e "SHOW TABLES;"
 
           echo "✅ Database setup completed"
 
