@@ -316,13 +316,17 @@ jobs:
           BACKEND_PORT: 3000
           NODE_ENV: test
         run: |
+          # Store the original directory
+          ORIGINAL_DIR=$(pwd)
+          echo "🔍 Original directory: $ORIGINAL_DIR"
+
           cd CanadaGoose/client/selenium/e2e
           source venv/bin/activate
           chmod +x test.run.sh
 
           # Start backend server in background with database environment variables
           echo "🔧 Starting backend server for Selenium tests..."
-          cd ../../../server
+          cd "$ORIGINAL_DIR/CanadaGoose/server"
 
           # Install backend dependencies if not already installed
           echo "📦 Installing backend dependencies..."
@@ -339,7 +343,7 @@ jobs:
 
           npm run dev &
           BACKEND_PID=$!
-          cd ../../selenium/e2e
+          cd "$ORIGINAL_DIR/CanadaGoose/client/selenium/e2e"
 
           # Wait for backend to be ready
           echo "⏳ Waiting for backend server to be ready..."
@@ -360,7 +364,7 @@ jobs:
 
           # Start frontend server in background
           echo "🔧 Starting frontend server for Selenium tests..."
-          cd ../..
+          cd "$ORIGINAL_DIR/CanadaGoose/client"
 
           # Install frontend dependencies if not already installed
           echo "📦 Installing frontend dependencies..."
@@ -368,7 +372,7 @@ jobs:
 
           npm run dev &
           FRONTEND_PID=$!
-          cd selenium/e2e
+          cd "$ORIGINAL_DIR/CanadaGoose/client/selenium/e2e"
 
           # Wait for frontend to be ready
           echo "⏳ Waiting for frontend server to be ready..."
