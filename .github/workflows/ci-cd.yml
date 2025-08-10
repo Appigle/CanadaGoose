@@ -2,7 +2,7 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main]
   pull_request:
     branches: [main]
 
@@ -13,7 +13,6 @@ permissions:
   actions: read
 
 jobs:
-  # Source Stage: Integrate with version control repository
   source:
     runs-on: ubuntu-latest
     steps:
@@ -25,7 +24,6 @@ jobs:
           echo "Branch: ${{ github.ref_name }}"
           echo "Commit: ${{ github.sha }}"
 
-  # Code Scanning Stage (Bonus)
   code-scanning:
     runs-on: ubuntu-latest
     steps:
@@ -60,7 +58,6 @@ jobs:
           echo "✅ Code Scanning Stage: Vulnerability scan completed"
           echo "Results available in GitHub Security tab"
 
-  # Build Stage: Compile/build application and validate infrastructure
   build:
     runs-on: ubuntu-latest
     needs: [source, code-scanning]
@@ -127,13 +124,12 @@ jobs:
         run: |
           echo "✅ Build Stage: Application compiled and infrastructure validated"
 
-  # Test Stage: Run automated tests with code coverage
   test:
     runs-on: ubuntu-latest
     needs: [build]
     services:
       mysql:
-        image: mysql:8.0.36 # pin for stability (optional but recommended)
+        image: mysql:8.0.36
         env:
           MYSQL_ROOT_PASSWORD: rootpass
           MYSQL_DATABASE: webapp_db
@@ -420,7 +416,6 @@ jobs:
           echo "📊 Coverage reports uploaded to Codecov"
           echo "🧪 Tests included: Backend unit tests, Frontend unit tests, Cypress E2E tests, Selenium E2E tests"
 
-  # Deploy Stage: Echo deployed
   deploy:
     runs-on: ubuntu-latest
     needs: [test]
@@ -434,7 +429,6 @@ jobs:
           echo "Commit: ${{ github.sha }}"
           echo "Deployment completed at: $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
 
-  # Summary Job
   summary:
     runs-on: ubuntu-latest
     needs: [source, code-scanning, build, test, deploy]
