@@ -8,7 +8,8 @@
   "scripts": {
     "start": "PORT=3000 node app.js",
     "dev": "PORT=3000 nodemon app.js",
-    "test": "NODE_ENV=test mocha test/*.js --timeout 5000"
+    "test": "NODE_ENV=test mocha test/*.js --timeout 5000",
+    "test:coverage": "NODE_ENV=test nyc mocha test/*.js --timeout 5000"
   },
   "keywords": [
     "express",
@@ -34,6 +35,8 @@
     "chai": "^4.5.0",
     "mocha": "^10.8.2",
     "nodemon": "^3.1.9",
+    "nyc": "^15.1.0",
+    "@istanbuljs/nyc-config-typescript": "^1.0.2",
     "supertest": "^7.0.0"
   }
 }
