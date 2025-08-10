@@ -147,9 +147,6 @@ jobs:
           --health-timeout=5s
           --health-retries=10
           --health-start-period=60s
-        # ❌ remove the volumes mount that referenced init.sql
-        # volumes:
-        #   - ${{ github.workspace }}/CanadaGoose/server/database/init.sql:/docker-entrypoint-initdb.d/init.sql
 
     steps:
       - uses: actions/checkout@v4
@@ -230,19 +227,14 @@ jobs:
             fi
           else
             echo "⚠️  init.sql not found, creating basic schema..."
-            if mysql -h 127.0.0.1 -P 3306 -u root -prootpass webapp_db << 'EOF'
-            CREATE TABLE IF NOT EXISTS users (
-              id INT AUTO_INCREMENT PRIMARY KEY,
-              username VARCHAR(255) UNIQUE NOT NULL,
-              email VARCHAR(255) UNIQUE NOT NULL,
-              password VARCHAR(255) NOT NULL,
-              created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            );
-            EOF
-            then
+            # Create a temporary SQL file to avoid heredoc syntax issues
+            echo "CREATE TABLE IF NOT EXISTS users (id INT AUTO_INCREMENT PRIMARY KEY, username VARCHAR(255) UNIQUE NOT NULL, email VARCHAR(255) UNIQUE NOT NULL, password VARCHAR(255) NOT NULL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);" > /tmp/create_schema.sql
+            if mysql -h 127.0.0.1 -P 3306 -u root -prootpass webapp_db < /tmp/create_schema.sql; then
               echo "✅ Basic database schema created"
+              rm /tmp/create_schema.sql
             else
               echo "❌ Failed to create basic schema"
+              rm -f /tmp/create_schema.sql
               exit 1
             fi
           fi
