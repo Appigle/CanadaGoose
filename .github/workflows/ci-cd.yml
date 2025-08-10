@@ -180,6 +180,13 @@ jobs:
           sudo apt-get install -y mysql-client
           echo "✅ MySQL client tools installed"
 
+      - name: Check MySQL container status
+        run: |
+          echo "🔍 Checking MySQL container status..."
+          docker ps -a
+          echo "📊 MySQL container logs:"
+          docker logs $(docker ps -aq --filter "ancestor=mysql:8.0.36") || echo "No MySQL container found"
+
       - name: Setup and initialize database
         run: |
           echo "🔧 Setting up database schema..."
@@ -205,14 +212,25 @@ jobs:
             exit 1
           fi
 
-          # Initialize database schema
+          # Debug: Check current directory and file existence
+          echo "🔍 Debug: Current directory: $(pwd)"
+          echo "🔍 Debug: Checking for init.sql file..."
+          ls -la database/ || echo "database/ directory not found"
+          ls -la || echo "Current directory listing failed"
+
+          # Initialize database schema with better error handling
           echo "📊 Initializing database schema..."
           if [ -f "database/init.sql" ]; then
-            mysql -h 127.0.0.1 -P 3306 -u root -prootpass webapp_db < database/init.sql
-            echo "✅ Database schema initialized from init.sql"
+            echo "✅ Found init.sql, using it to initialize schema..."
+            if mysql -h 127.0.0.1 -P 3306 -u root -prootpass webapp_db < database/init.sql; then
+              echo "✅ Database schema initialized from init.sql"
+            else
+              echo "❌ Failed to initialize from init.sql"
+              exit 1
+            fi
           else
             echo "⚠️  init.sql not found, creating basic schema..."
-            mysql -h 127.0.0.1 -P 3306 -u root -prootpass webapp_db << 'EOF'
+            if mysql -h 127.0.0.1 -P 3306 -u root -prootpass webapp_db << 'EOF'
             CREATE TABLE IF NOT EXISTS users (
               id INT AUTO_INCREMENT PRIMARY KEY,
               username VARCHAR(255) UNIQUE NOT NULL,
@@ -221,12 +239,22 @@ jobs:
               created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
             EOF
-            echo "✅ Basic database schema created"
+            then
+              echo "✅ Basic database schema created"
+            else
+              echo "❌ Failed to create basic schema"
+              exit 1
+            fi
           fi
 
-          # Verify tables exist
+          # Verify tables exist with error handling
           echo "🔍 Verifying database tables..."
-          mysql -h 127.0.0.1 -P 3306 -u root -prootpass webapp_db -e "SHOW TABLES;"
+          if mysql -h 127.0.0.1 -P 3306 -u root -prootpass webapp_db -e "SHOW TABLES;"; then
+            echo "✅ Tables verified successfully"
+          else
+            echo "❌ Failed to verify tables"
+            exit 1
+          fi
 
           echo "✅ Database setup completed"
 
