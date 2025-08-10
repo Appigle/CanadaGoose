@@ -110,8 +110,10 @@ jobs:
       mysql:
         image: mysql:8.0
         env:
-          MYSQL_ROOT_PASSWORD: testpass
-          MYSQL_DATABASE: testdb
+          MYSQL_ROOT_PASSWORD: rootpass
+          MYSQL_DATABASE: webapp_db
+          MYSQL_USER: webapp_user
+          MYSQL_PASSWORD: webapp_pass
         ports:
           - 3306:3306
         options: >-
@@ -148,8 +150,8 @@ jobs:
           DB_HOST: localhost
           DB_PORT: 3306
           DB_USER: root
-          DB_PASSWORD: testpass
-          DB_NAME: testdb
+          DB_PASSWORD: rootpass
+          DB_NAME: webapp_db
           JWT_SECRET: chiputaobutuputaopibuchiputaopibuchiputaodaotuputaopi
         run: |
           cd CanadaGoose/server
