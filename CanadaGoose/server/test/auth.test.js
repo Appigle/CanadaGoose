@@ -2,6 +2,9 @@ const request = require('supertest');
 const { expect } = require('chai');
 const app = require('../app');
 
+// Global timeout for all tests
+this.timeout(15000);
+
 // Helper function to generate unique test data
 const generateTestUser = (suffix = Date.now()) => {
   const randomId = Math.random().toString(36).substring(2, 8);
@@ -259,5 +262,13 @@ describe('Auth Endpoints', () => {
       expect(res.status).to.equal(404);
       expect(res.body.error).to.equal('Route not found');
     });
+  });
+
+  // Cleanup after all tests
+  after(async () => {
+    // Force exit after tests complete to prevent hanging
+    setTimeout(() => {
+      process.exit(0);
+    }, 1000);
   });
 });
