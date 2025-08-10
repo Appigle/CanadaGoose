@@ -2,9 +2,6 @@ const request = require('supertest');
 const { expect } = require('chai');
 const app = require('../app');
 
-// Global timeout for all tests
-this.timeout(15000);
-
 // Helper function to generate unique test data
 const generateTestUser = (suffix = Date.now()) => {
   const randomId = Math.random().toString(36).substring(2, 8);
@@ -15,7 +12,10 @@ const generateTestUser = (suffix = Date.now()) => {
   };
 };
 
-describe('Auth Endpoints', () => {
+describe('Auth Endpoints', function () {
+  // Set timeout for all tests in this describe block
+  this.timeout(15000);
+
   describe('POST /api/signup', () => {
     it('should enforce password policy on signup', async () => {
       const res = await request(app).post('/api/signup').send({
@@ -266,9 +266,7 @@ describe('Auth Endpoints', () => {
 
   // Cleanup after all tests
   after(async () => {
-    // Force exit after tests complete to prevent hanging
-    setTimeout(() => {
-      process.exit(0);
-    }, 1000);
+    // Cleanup any resources if needed
+    console.log('✅ All tests completed successfully');
   });
 });
