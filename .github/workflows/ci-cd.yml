@@ -146,6 +146,8 @@ jobs:
           --health-interval=10s
           --health-timeout=5s
           --health-retries=3
+        volumes:
+          - ./CanadaGoose/server/database/init.sql:/docker-entrypoint-initdb.d/init.sql
 
     steps:
       - uses: actions/checkout@v4
@@ -168,6 +170,21 @@ jobs:
         run: |
           cd CanadaGoose/client && npm ci
           cd ../server && npm ci
+
+      - name: Setup and initialize database
+        run: |
+          echo "🔧 Setting up database schema..."
+          cd CanadaGoose/server
+
+          # Wait for MySQL to be ready
+          echo "⏳ Waiting for MySQL to be ready..."
+          timeout 60 bash -c 'until mysql -h localhost -P 3306 -u root -prootpass -e "SELECT 1" >/dev/null 2>&1; do sleep 2; done'
+
+          # Initialize database schema
+          echo "📊 Initializing database schema..."
+          mysql -h localhost -P 3306 -u root -prootpass webapp_db < database/init.sql
+
+          echo "✅ Database setup completed"
 
       - name: Run backend tests with coverage
         env:
