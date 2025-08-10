@@ -133,7 +133,7 @@ jobs:
     needs: [build]
     services:
       mysql:
-        image: mysql:8.0
+        image: mysql:8.0.36 # pin for stability (optional but recommended)
         env:
           MYSQL_ROOT_PASSWORD: rootpass
           MYSQL_DATABASE: webapp_db
@@ -141,8 +141,15 @@ jobs:
           MYSQL_PASSWORD: webapp_pass
         ports:
           - 3306:3306
-        volumes:
-          - ${{ github.workspace }}/CanadaGoose/server/database/init.sql:/docker-entrypoint-initdb.d/init.sql
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -u root -prootpass"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+          --health-start-period=60s
+        # ❌ remove the volumes mount that referenced init.sql
+        # volumes:
+        #   - ${{ github.workspace }}/CanadaGoose/server/database/init.sql:/docker-entrypoint-initdb.d/init.sql
 
     steps:
       - uses: actions/checkout@v4
@@ -173,19 +180,6 @@ jobs:
           sudo apt-get install -y mysql-client
           echo "✅ MySQL client tools installed"
 
-      - name: Wait for MySQL service to start
-        run: |
-          echo "⏳ Waiting for MySQL service to fully start..."
-          sleep 30
-          echo "✅ Wait completed"
-
-      - name: Check MySQL container status
-        run: |
-          echo "🔍 Checking MySQL container status..."
-          docker ps -a
-          echo "📊 Container logs:"
-          docker logs $(docker ps -q --filter "ancestor=mysql:8.0") || echo "No MySQL container found"
-
       - name: Setup and initialize database
         run: |
           echo "🔧 Setting up database schema..."
@@ -193,31 +187,32 @@ jobs:
 
           # Wait for MySQL to be ready with better error handling
           echo "⏳ Waiting for MySQL to be ready..."
-          for i in {1..30}; do
-            if mysql -h localhost -P 3306 -u root -prootpass -e "SELECT 1" >/dev/null 2>&1; then
+          for i in {1..60}; do
+            if mysql -h 127.0.0.1 -P 3306 -u root -prootpass -e "SELECT 1" >/dev/null 2>&1; then
               echo "✅ MySQL is ready!"
               break
             fi
-            echo "⏳ Attempt $i/30: MySQL not ready yet, waiting..."
-            sleep 5
+            echo "⏳ Attempt $i/60: MySQL not ready yet, waiting..."
+            sleep 3
           done
 
-          # Check if MySQL is accessible
-          if ! mysql -h localhost -P 3306 -u root -prootpass -e "SELECT 1" >/dev/null 2>&1; then
-            echo "❌ MySQL is not accessible after 30 attempts"
-            echo "🔍 Checking MySQL container status..."
+          # Final availability check
+          if ! mysql -h 127.0.0.1 -P 3306 -u root -prootpass -e "SELECT 1" >/dev/null 2>&1; then
+            echo "❌ MySQL is not accessible after waiting"
+            echo "🔍 Dumping MySQL container logs for debugging..."
             docker ps -a
+            docker logs $(docker ps -aq --filter "name=mysql") || true
             exit 1
           fi
 
           # Initialize database schema
           echo "📊 Initializing database schema..."
           if [ -f "database/init.sql" ]; then
-            mysql -h localhost -P 3306 -u root -prootpass webapp_db < database/init.sql
+            mysql -h 127.0.0.1 -P 3306 -u root -prootpass webapp_db < database/init.sql
             echo "✅ Database schema initialized from init.sql"
           else
             echo "⚠️  init.sql not found, creating basic schema..."
-            mysql -h localhost -P 3306 -u root -prootpass webapp_db << 'EOF'
+            mysql -h 127.0.0.1 -P 3306 -u root -prootpass webapp_db << 'EOF'
             CREATE TABLE IF NOT EXISTS users (
               id INT AUTO_INCREMENT PRIMARY KEY,
               username VARCHAR(255) UNIQUE NOT NULL,
@@ -231,14 +226,14 @@ jobs:
 
           # Verify tables exist
           echo "🔍 Verifying database tables..."
-          mysql -h localhost -P 3306 -u root -prootpass webapp_db -e "SHOW TABLES;"
+          mysql -h 127.0.0.1 -P 3306 -u root -prootpass webapp_db -e "SHOW TABLES;"
 
           echo "✅ Database setup completed"
 
       - name: Run backend tests with coverage
         env:
           NODE_ENV: test
-          DB_HOST: localhost
+          DB_HOST: 127.0.0.1
           DB_PORT: 3306
           DB_USER: root
           DB_PASSWORD: rootpass
