@@ -303,6 +303,8 @@ jobs:
           cd CanadaGoose/client/selenium/e2e
           source venv/bin/activate
           chmod +x test.run.sh
+          # Set environment variable for backend port
+          export BACKEND_PORT=3000
           ./test.run.sh
 
       - name: Upload coverage reports to Codecov
