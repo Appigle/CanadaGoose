@@ -141,11 +141,6 @@ jobs:
           MYSQL_PASSWORD: webapp_pass
         ports:
           - 3306:3306
-        options: >-
-          --health-cmd="mysqladmin ping -h localhost -u root -prootpass"
-          --health-interval=30s
-          --health-timeout=10s
-          --health-retries=5
         volumes:
           - ${{ github.workspace }}/CanadaGoose/server/database/init.sql:/docker-entrypoint-initdb.d/init.sql
 
@@ -177,6 +172,19 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y mysql-client
           echo "✅ MySQL client tools installed"
+
+      - name: Wait for MySQL service to start
+        run: |
+          echo "⏳ Waiting for MySQL service to fully start..."
+          sleep 30
+          echo "✅ Wait completed"
+
+      - name: Check MySQL container status
+        run: |
+          echo "🔍 Checking MySQL container status..."
+          docker ps -a
+          echo "📊 Container logs:"
+          docker logs $(docker ps -q --filter "ancestor=mysql:8.0") || echo "No MySQL container found"
 
       - name: Setup and initialize database
         run: |
