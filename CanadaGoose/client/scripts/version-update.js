@@ -53,6 +53,7 @@ function parseCommandLineArgs() {
     version: null,
     git: true,
     silent: false,
+    auto: false,
     help: false,
   }
 
@@ -86,6 +87,9 @@ function parseCommandLineArgs() {
       case '--silent':
       case '-s':
         options.silent = true
+        break
+      case '--auto':
+        options.auto = true
         break
       case '--help':
       case '-h':
@@ -272,8 +276,15 @@ async function main() {
     // Git operations
     if (options.git) {
       logSilent('\n🔧 Performing git operations...', 'blue')
-      commitVersionChange(newVersion)
-      createGitTag(newVersion)
+      if (options.auto) {
+        // Auto mode: perform all git operations without prompts
+        commitVersionChange(newVersion)
+        createGitTag(newVersion)
+      } else {
+        // Interactive mode: ask for confirmation
+        commitVersionChange(newVersion)
+        createGitTag(newVersion)
+      }
     } else {
       logSilent('⏭️  Skipping git operations', 'yellow')
     }

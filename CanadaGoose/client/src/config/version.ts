@@ -1,7 +1,7 @@
 // This file is automatically updated during the build process
 // Do not edit manually
 
-export const APP_VERSION = '0.1.6'
+export const APP_VERSION = '0.1.10'
 export const APP_NAME = 'CanadaGoose'
 export const BUILD_DATE = new Date().toISOString()
 

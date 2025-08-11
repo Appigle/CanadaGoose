@@ -14,11 +14,14 @@ function showHelp() {
   console.log('  --help, -h           Show this help message')
   console.log('  --silent, -s         Minimal output (for CI/CD)')
   console.log('  --auto               Auto-confirm all actions')
+  console.log('\nDefault Behavior:')
+  console.log('  🏷️  If no version type is specified, defaults to --patch')
+  console.log('  ✅ Always uses --auto for automated builds')
   console.log('\nExamples:')
-  console.log('  node pre-build-direct.js --patch')
-  console.log('  node pre-build-direct.js --minor --no-git')
-  console.log('  node pre-build-direct.js --version 2.0.0 --auto')
-  console.log('  node pre-build-direct.js -p -s --auto')
+  console.log('  node pre-build-direct.js                    # Default: patch update')
+  console.log('  node pre-build-direct.js --patch           # Explicit patch update')
+  console.log('  node pre-build-direct.js --minor --no-git  # Minor update, no git')
+  console.log('  node pre-build-direct.js --version 2.0.0  # Set specific version')
 }
 
 function parseCommandLineArgs() {
@@ -103,9 +106,16 @@ try {
 
   // Prepare arguments for version update
   const args = []
+
+  // Set default patch version update if no specific type is provided
   if (options.type) {
     args.push(`--${options.type}`)
+  } else if (!options.version) {
+    // Default to patch version update for builds
+    log('🏷️  No version type specified, defaulting to patch version update')
+    args.push('--patch')
   }
+
   if (options.version) {
     args.push('--version', options.version)
   }
@@ -116,6 +126,11 @@ try {
     args.push('--silent')
   }
   if (options.auto) {
+    args.push('--auto')
+  }
+
+  // Always add --auto for automated builds
+  if (!args.includes('--auto')) {
     args.push('--auto')
   }
 
