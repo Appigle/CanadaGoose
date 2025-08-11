@@ -1,7 +1,6 @@
 {
   "name": "server",
-  "version": "3.0.0",
-  "type": "module",
+  "version": "3.0.2",
   "main": "app.js",
   "directories": {
     "test": "test"
