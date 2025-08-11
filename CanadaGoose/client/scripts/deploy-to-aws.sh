@@ -117,15 +117,15 @@ ssh -i "$SSH_KEY" "ec2-user@$EC2_IP" << 'REMOTE_COMMANDS'
     
     # Backup current deployment
     echo "💾 Creating backup..."
-    if [ -d "/opt/app/client" ]; then
-        sudo cp -r /opt/app/client /opt/app/client.backup.$(date +%Y%m%d_%H%M%S)
+    if [ -d "/var/www/app" ]; then
+        sudo cp -r /var/www/app /var/www/app.backup.$(date +%Y%m%d_%H%M%S)
         echo "✅ Backup created"
     fi
     
     # Deploy to application directory
-    echo "📁 Deploying to /opt/app/client..."
-    sudo mkdir -p /opt/app/client
-    sudo rm -rf /opt/app/client/*
+    echo "📁 Deploying to /var/www/app..."
+    sudo mkdir -p /var/www/app
+    sudo rm -rf /var/www/app/*
     
     # Copy files while excluding macOS-specific files
     echo "📋 Copying application files..."
@@ -133,7 +133,7 @@ ssh -i "$SSH_KEY" "ec2-user@$EC2_IP" << 'REMOTE_COMMANDS'
         for item in dist/*; do
             # Skip macOS-specific files and hidden files
             if [[ "$item" != dist/__MACOSX && "$item" != dist/.DS_Store && "$item" != dist/.* && "$item" != dist/._* ]]; then
-                sudo cp -r "$item" /opt/app/client/
+                sudo cp -r "$item" /var/www/app/
                 echo "   ✅ Copied: $(basename "$item")"
             else
                 echo "   ⏭️  Skipped: $(basename "$item") (macOS artifact)"
@@ -146,8 +146,8 @@ ssh -i "$SSH_KEY" "ec2-user@$EC2_IP" << 'REMOTE_COMMANDS'
     
     # Set correct permissions
     echo "🔐 Setting permissions..."
-    sudo chown -R nginx:nginx /opt/app/client
-    sudo chmod -R 755 /opt/app/client
+    sudo chown -R nginx:nginx /var/www/app
+    sudo chmod -R 755 /var/www/app
     
     # Clean up temporary files
     echo "🧹 Cleaning up..."
@@ -170,11 +170,11 @@ ssh -i "$SSH_KEY" "ec2-user@$EC2_IP" << 'REMOTE_COMMANDS'
     
     # Test deployment
     echo "🧪 Testing deployment..."
-    if [ -f "/opt/app/client/index.html" ]; then
+    if [ -f "/var/www/app/index.html" ]; then
         echo "✅ index.html found"
-        echo "📊 File count: $(ls -1 /opt/app/client/ | wc -l)"
+        echo "📊 File count: $(ls -1 /var/www/app/ | wc -l)"
         echo "📁 Contents:"
-        ls -la /opt/app/client/
+        ls -la /var/www/app/
         
             # Test if the app is accessible
     echo "🌐 Testing app accessibility..."
@@ -206,7 +206,7 @@ echo ""
 echo "📊 Deployment Summary:"
 echo "   ✅ Production build completed"
 echo "   ✅ Files uploaded to EC2"
-echo "   ✅ Deployed to /opt/app/client"
+echo "   ✅ Deployed to /var/www/app"
 echo "   ✅ Permissions set correctly"
 echo "   ✅ Nginx restarted/reloaded"
 echo ""

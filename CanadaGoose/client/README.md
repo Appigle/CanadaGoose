@@ -137,6 +137,47 @@ python test_signup.py
 
 ---
 
+## 🚀 Production Deployment
+
+### AWS EC2 Deployment
+
+This project includes automated deployment scripts for AWS EC2:
+
+```bash
+# Deploy to AWS production (build + deploy)
+./scripts/deploy-to-aws.sh
+
+# Build only (local)
+./scripts/build-production.sh
+```
+
+### Deployment Details
+
+- **Frontend Location**: `/var/www/app/` on EC2 instance
+- **Nginx Configuration**: Automatically configured for SPA routing
+- **Backup**: Automatic backup before deployment
+- **Permissions**: Automatically set for nginx user
+
+### Manual Deployment
+
+If you prefer manual deployment:
+
+```bash
+# Build the project
+npm run build:prod
+
+# Upload to EC2
+scp -i ../../infra/ssh_key -r dist/* ec2-user@44.195.110.182:/var/www/app/
+
+# Set permissions on EC2
+ssh -i ../../infra/ssh_key ec2-user@44.195.110.182
+sudo chown -R nginx:nginx /var/www/app
+sudo chmod -R 755 /var/www/app
+sudo systemctl reload nginx
+```
+
+---
+
 ## 🗺️ Roadmap
 
 - [ ] Recurring transactions

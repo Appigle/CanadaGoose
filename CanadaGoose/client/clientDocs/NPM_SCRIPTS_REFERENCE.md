@@ -54,7 +54,7 @@ npm run deploy:build        # 🏗️ Build locally for testing
 - ✅ Builds production bundle
 - ✅ Creates deployment package
 - ✅ Uploads to EC2
-- ✅ Deploys to `/opt/app/client`
+- ✅ Deploys to `/var/www/app`
 - ✅ Sets permissions
 - ✅ **Restarts Nginx automatically**
 - ✅ Tests deployment

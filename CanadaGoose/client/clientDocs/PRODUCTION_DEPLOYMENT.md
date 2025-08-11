@@ -84,7 +84,7 @@ dist/
 
 ```bash
 # Upload the built files
-scp -r dist/* ec2-user@44.195.110.182:/opt/app/client/
+scp -r dist/* ec2-user@44.195.110.182:/var/www/app/
 
 # Or upload the package
 scp canadagoose-client-prod.tar.gz ec2-user@44.195.110.182:/tmp/
@@ -95,7 +95,7 @@ ssh ec2-user@44.195.110.182 'cd /opt/app && tar -xzf /tmp/canadagoose-client-pro
 
 ```bash
 # Check if files are uploaded
-ssh ec2-user@44.195.110.182 'ls -la /opt/app/client/'
+ssh ec2-user@44.195.110.182 'ls -la /var/www/app/'
 
 # Test the application
 curl http://s25cicd.xiaopotato.top/app
@@ -182,7 +182,7 @@ npm run build:prod
 
 - [ ] Run `./deploy-production.sh`
 - [ ] Verify `dist/` folder is created
-- [ ] Upload files to `/opt/app/client/` on EC2
+- [ ] Upload files to `/var/www/app/` on EC2
 - [ ] Test application at `http://s25cicd.xiaopotato.top/app`
 - [ ] Verify API calls work correctly
 - [ ] Check browser console for errors

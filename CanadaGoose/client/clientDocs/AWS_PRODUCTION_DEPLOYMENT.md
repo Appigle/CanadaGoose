@@ -43,7 +43,7 @@ npm run build:prod
 
 - Creates deployment package (`canadagoose-client-prod.tar.gz`)
 - Uploads to EC2 instance via SCP
-- Extracts files to `/opt/app/client/`
+- Extracts files to `/var/www/app/`
 - Sets proper permissions (nginx:nginx)
 - Creates automatic backups
 - Tests deployment accessibility
@@ -85,14 +85,14 @@ npm run build:prod
    tar -xzf canadagoose-client-prod.tar.gz
 
    # Backup current version
-   sudo cp -r /opt/app/client /opt/app/client.backup.$(date +%Y%m%d_%H%M%S)
+   sudo cp -r /var/www/app /var/www/app.backup.$(date +%Y%m%d_%H%M%S)
 
    # Deploy new version
-   sudo cp -r dist/* /opt/app/client/
+   sudo cp -r dist/* /var/www/app/
 
    # Set permissions
-   sudo chown -R nginx:nginx /opt/app/client
-   sudo chmod -R 755 /opt/app/client
+   sudo chown -R nginx:nginx /var/www/app
+   sudo chmod -R 755 /var/www/app
    ```
 
 ## 🌐 **Production URLs**
@@ -174,10 +174,10 @@ cd /opt/app/server-scripts/
 sudo systemctl status nginx
 
 # Check app files
-ls -la /opt/app/client/
+ls -la /var/www/app/
 
 # Check permissions
-sudo chown -R nginx:nginx /opt/app/client
+sudo chown -R nginx:nginx /var/www/app
 ```
 
 #### **4. API Issues**
