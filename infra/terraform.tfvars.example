@@ -1,0 +1,38 @@
+# Copy this file to terraform.tfvars and update the values
+
+# Project configuration
+project_name = "canadagoose"
+aws_region   = "us-east-1"
+environment  = "prod"
+
+# Database configuration
+db_name = "webapp_db"
+db_user = "webapp_user"
+
+# Domain configuration
+domain_host = "s25cicd.xiaopotato.top"
+
+# Infrastructure sizing
+instance_type        = "t3.micro"
+db_instance_class    = "db.t3.micro"
+db_allocated_storage = 20
+
+# Network configuration
+vpc_cidr            = "10.0.0.0/16"
+public_subnet_cidrs = ["10.0.1.0/24", "10.0.2.0/24"]
+
+# Resource preservation settings
+# IMPORTANT: Keep these as true to prevent accidental resource replacement
+preserve_existing_resources = true
+force_resource_recreation   = false
+
+# External secrets (optional - leave empty to use deterministic secrets)
+# For production, you can override the deterministic secrets with external values
+external_db_password = ""
+external_jwt_secret  = ""
+
+# Additional tags
+extra_tags = {
+  Team    = "devops"
+  Project = "canadagoose"
+} 
