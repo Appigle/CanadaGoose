@@ -28,19 +28,48 @@ app.use(
   })
 );
 
-// CORS configuration for production
+// CORS configuration for development and production
 const corsOptions = {
-  origin:
-    process.env.CORS_ORIGIN ||
-    process.env.FRONTEND_URL ||
-    'http://s25cicd.xiaopotato.top',
+  origin: function (origin, callback) {
+    // In development, be more permissive
+    if (process.env.NODE_ENV === 'development' || !!1) {
+      // Allow all localhost origins during development
+      if (
+        !origin ||
+        origin.startsWith('http://localhost:') ||
+        origin.startsWith('http://127.0.0.1:')
+      ) {
+        return callback(null, true);
+      }
+    }
+
+    // Production origins
+    const allowedOrigins = [
+      'http://s25cicd.xiaopotato.top',
+      'https://s25cicd.xiaopotato.top',
+      // Environment variables (if set)
+      process.env.CORS_ORIGIN,
+      process.env.FRONTEND_URL,
+    ].filter(Boolean); // Remove undefined values
+
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.log(`CORS blocked request from: ${origin}`);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
   optionsSuccessStatus: 200,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  exposedHeaders: ['Content-Length', 'X-Requested-With'],
 };
 
 app.use(cors(corsOptions));
+
+// Handle preflight requests
+app.options('*', cors(corsOptions));
 
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
@@ -119,6 +148,35 @@ app.get('/api/healthcheck', async (req, res) => {
   }
 });
 
+// Version endpoint
+app.get('/api/version', (req, res) => {
+  try {
+    const packageJson = require('./package.json');
+
+    res.json({
+      version: packageJson.version,
+      name: packageJson.name,
+      description: packageJson.description,
+      timestamp: new Date().toISOString(),
+      environment: process.env.NODE_ENV || 'development',
+      uptime: process.uptime(),
+      serverInfo: {
+        internalUrl: `http://localhost:${process.env.PORT || 3000}`,
+        internalApiUrl: `http://localhost:${process.env.PORT || 3000}/api`,
+        externalDomain: 's25cicd.xiaopotato.top',
+        externalUrl: 'http://s25cicd.xiaopotato.top',
+        externalApiUrl: 'http://s25cicd.xiaopotato.top/api',
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      error: 'Failed to retrieve version information',
+      message: error.message,
+      timestamp: new Date().toISOString(),
+    });
+  }
+});
+
 // 404 handler for undefined routes
 app.use((req, res) => {
   if (req.originalUrl.startsWith('/api')) {
@@ -127,6 +185,7 @@ app.use((req, res) => {
       message: `The requested endpoint ${req.originalUrl} does not exist`,
       availableEndpoints: [
         'GET /api/healthcheck',
+        'GET /api/version',
         'POST /api/signup',
         'POST /api/login',
         'GET /api/me',

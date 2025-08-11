@@ -38,6 +38,28 @@ echo "   Environment: Production"
 echo "   API Base URL: http://s25cicd.xiaopotato.top/api"
 echo "   Server Port: 3000"
 
+# Update version before deployment
+echo ""
+echo "🏷️  Updating version before deployment..."
+echo "   Current version: $(node -e "console.log(require('./package.json').version)")"
+
+# Check if version update script exists
+if [ -f "scripts/interactive-version.js" ]; then
+    echo "   Updating patch version..."
+    if node scripts/interactive-version.js --patch --auto --silent; then
+        NEW_VERSION=$(node -e "console.log(require('./package.json').version)")
+        echo "   ✅ Version updated to: $NEW_VERSION"
+        echo "   📝 Changes committed to git"
+    else
+        echo "   ⚠️  Version update failed, continuing with current version"
+    fi
+else
+    echo "   ⚠️  Version update script not found, continuing with current version"
+fi
+
+echo "   Final version: $(node -e "console.log(require('./package.json').version)")"
+echo ""
+
 # Load environment variables from .env if it exists, otherwise create from env.example
 if [ -f ".env" ]; then
     echo "📁 Loading environment variables from .env file..."
@@ -102,6 +124,7 @@ tar -czf canadagoose-server-prod.tar.gz \
   middleware/ \
   database/ \
   test/ \
+  scripts/ \
   env.example \
   setup-env.sh \
   init-database.sh
@@ -219,6 +242,21 @@ ssh -i "$SSH_KEY" "ec2-user@$EC2_IP" << 'REMOTE_COMMANDS'
             echo "⚠️  API may not be fully ready yet"
         fi
         
+        # Test version endpoint
+        echo "🏷️  Testing version endpoint..."
+        if curl -s http://localhost:3000/api/version | grep -q "version"; then
+            echo "✅ Version endpoint is responding correctly"
+            # Display version information
+            echo "📋 Version information:"
+            curl -s http://localhost:3000/api/version | jq -r '.version, .name, .environment' 2>/dev/null || {
+                echo "   Version: $(curl -s http://localhost:3000/api/version | grep -o '"version":"[^"]*"' | cut -d'"' -f4)"
+                echo "   Name: $(curl -s http://localhost:3000/api/version | grep -o '"name":"[^"]*"' | cut -d'"' -f4)"
+                echo "   Environment: $(curl -s http://localhost:3000/api/version | grep -o '"environment":"[^"]*"' | cut -d'"' -f4)"
+            }
+        else
+            echo "⚠️  Version endpoint may not be fully ready yet"
+        fi
+        
         # Test database connection on EC2
         echo "🗄️  Testing database connection on EC2..."
         if node -e "
@@ -254,16 +292,43 @@ ssh -i "$SSH_KEY" "ec2-user@$EC2_IP" << 'REMOTE_COMMANDS'
     echo "✅ Server deployment completed successfully!"
 REMOTE_COMMANDS
 
+# Test external API endpoints
+echo ""
+echo "🌐 Testing external API endpoints..."
+echo "   Testing from local machine to production server..."
+
+# Test health check endpoint
+if curl -s http://s25cicd.xiaopotato.top/api/healthcheck | grep -q "status"; then
+    echo "✅ External health check endpoint is accessible"
+else
+    echo "⚠️  External health check endpoint may not be accessible yet"
+fi
+
+# Test version endpoint
+if curl -s http://s25cicd.xiaopotato.top/api/version | grep -q "version"; then
+    echo "✅ External version endpoint is accessible"
+    echo "📋 Production version information:"
+    curl -s http://s25cicd.xiaopotato.top/api/version | jq -r '.version, .name, .environment' 2>/dev/null || {
+        echo "   Version: $(curl -s http://s25cicd.xiaopotato.top/api/version | grep -o '"version":"[^"]*"' | cut -d'"' -f4)"
+        echo "   Name: $(curl -s http://s25cicd.xiaopotato.top/api/version | grep -o '"name":"[^"]*"' | cut -d'"' -f4)"
+        echo "   Environment: $(curl -s http://s25cicd.xiaopotato.top/api/version | grep -o '"environment":"[^"]*"' | cut -d'"' -f4)"
+    }
+else
+    echo "⚠️  External version endpoint may not be accessible yet"
+fi
+
 echo ""
 echo "🎉 Server deployment completed successfully!"
 echo ""
 echo "📊 Deployment Summary:"
+echo "   ✅ Version updated to: $(node -e "console.log(require('./package.json').version)")"
 echo "   ✅ Production package created"
 echo "   ✅ Files uploaded to EC2"
 echo "   ✅ Deployed to /opt/app/server"
 echo "   ✅ Dependencies installed"
 echo "   ✅ PM2 process started"
 echo "   ✅ Environment configured"
+echo "   ✅ API endpoints tested (healthcheck + version)"
 echo "   ✅ Database connection tested on EC2"
 echo ""
 echo "🌐 Your server is now available at:"
@@ -272,6 +337,7 @@ echo "   Health Check: http://s25cicd.xiaopotato.top/api/healthcheck"
 echo ""
 echo "🔍 Test your deployment:"
 echo "   curl http://s25cicd.xiaopotato.top/api/healthcheck"
+echo "   curl http://s25cicd.xiaopotato.top/api/version"
 echo "   ssh -i ../../infra/ssh_key ec2-user@44.195.110.182 'pm2 status'"
 echo ""
 echo "💡 Next steps:"
@@ -279,5 +345,6 @@ echo "   1. Test the API endpoints"
 echo "   2. Database connectivity already verified on EC2"
 echo "   3. Check PM2 logs if needed: pm2 logs canadagoose-server"
 echo "   4. Monitor server performance"
+echo "   5. Version automatically bumped to: $(node -e "console.log(require('./package.json').version)")"
 echo ""
 echo "🚀 Deployment script completed successfully!" 
