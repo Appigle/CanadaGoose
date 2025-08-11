@@ -6,3 +6,4 @@ docs
 *node_modules*
 Assignment3.pdf
 .github/workflows/ci-cd-local.yml
+CanadaGoose/server/.env
