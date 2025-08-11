@@ -1,10 +1,10 @@
 {
   "name": "client",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "node scripts/update-version-config.js && vite",
     "prebuild": "node scripts/pre-build-direct.js && node scripts/update-version-config.js",
     "build": "run-p type-check \"build-only {@}\" --",
     "build:prod": "npm run prebuild && NODE_ENV=production vite build",
@@ -16,6 +16,7 @@
     "version:patch": "node scripts/interactive-version.js --patch --auto",
     "version:minor": "node scripts/interactive-version.js --minor --auto",
     "version:major": "node scripts/interactive-version.js --major --auto",
+    "version:check": "node scripts/check-version.js",
     "preview": "vite preview",
     "preview:prod": "vite preview --port 4173 --host",
     "test:unit": "vitest",
