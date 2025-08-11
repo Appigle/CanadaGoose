@@ -1,6 +1,6 @@
 {
   "name": "server",
-  "version": "3.0.3",
+  "version": "0.0.3",
   "main": "app.js",
   "directories": {
     "test": "test"
@@ -11,8 +11,6 @@
     "prod": "NODE_ENV=production PORT=3000 node app.js",
     "test": "NODE_ENV=test mocha test/*.js --timeout 10000 --exit",
     "test:coverage": "NODE_ENV=test nyc mocha test/*.js --timeout 10000 --exit",
-    "prebuild": "node scripts/pre-build-direct.js --patch --auto --silent",
-    "build": "echo 'Server built successfully'",
     "version:check": "node scripts/check-version.js",
     "version:patch": "node scripts/interactive-version.js --patch --auto",
     "version:minor": "node scripts/interactive-version.js --minor --auto",
