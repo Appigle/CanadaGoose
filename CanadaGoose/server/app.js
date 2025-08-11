@@ -6,7 +6,7 @@ require('dotenv').config();
 // Import middlewares and routes
 const { apiLimiter } = require('./middleware/rateLimiter');
 const authRoutes = require('./routes/auth');
-const { testConnection } = require('./config/database');
+const { testConnection, healthCheck } = require('./config/database');
 
 // Create Express app
 const app = express();
@@ -28,9 +28,12 @@ app.use(
   })
 );
 
-// CORS configuration
+// CORS configuration for production
 const corsOptions = {
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  origin:
+    process.env.CORS_ORIGIN ||
+    process.env.FRONTEND_URL ||
+    'http://s25cicd.xiaopotato.top',
   credentials: true,
   optionsSuccessStatus: 200,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -46,8 +49,17 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 // Apply general API rate limiting
 app.use('/api', apiLimiter);
 
-// Request logging middleware (development only)
-if (process.env.NODE_ENV !== 'production') {
+// Request logging middleware (enhanced for production)
+if (process.env.NODE_ENV === 'production') {
+  app.use((req, res, next) => {
+    console.log(
+      `${new Date().toISOString()} - ${req.method} ${req.path} - ${
+        req.ip
+      } - ${req.get('User-Agent')}`
+    );
+    next();
+  });
+} else {
   app.use((req, res, next) => {
     console.log(
       `${new Date().toISOString()} - ${req.method} ${req.path} - ${req.ip}`
@@ -62,31 +74,77 @@ app.use('/api', authRoutes);
 // Root endpoint
 app.get('/', (req, res) => {
   res.json({
-    message: 'Authentication API Server',
+    message: 'CanadaGoose Authentication API Server',
     version: '1.0.0',
     status: 'running',
+    environment: process.env.NODE_ENV || 'development',
     timestamp: new Date().toISOString(),
+    serverInfo: {
+      internalUrl: `http://localhost:${process.env.PORT || 3000}`,
+      internalApiUrl: `http://localhost:${process.env.PORT || 3000}/api`,
+      externalDomain: 's25cicd.xiaopotato.top',
+      externalUrl: 'http://s25cicd.xiaopotato.top',
+      externalApiUrl: 'http://s25cicd.xiaopotato.top/api',
+    },
   });
 });
 
-// 404 handler for undefined routes (temporarily simplified due to path-to-regexp issue)
+// Health check endpoint
+app.get('/api/healthcheck', async (req, res) => {
+  try {
+    const dbHealth = await healthCheck();
+
+    res.json({
+      status: 'healthy',
+      timestamp: new Date().toISOString(),
+      environment: process.env.NODE_ENV || 'development',
+      uptime: process.uptime(),
+      memory: process.memoryUsage(),
+      database: dbHealth.status,
+      serverInfo: {
+        internalUrl: `http://localhost:${process.env.PORT || 3000}`,
+        internalApiUrl: `http://localhost:${process.env.PORT || 3000}/api`,
+        externalDomain: 's25cicd.xiaopotato.top',
+        externalUrl: 'http://s25cicd.xiaopotato.top',
+        externalApiUrl: 'http://s25cicd.xiaopotato.top/api',
+      },
+    });
+  } catch (error) {
+    res.status(503).json({
+      status: 'unhealthy',
+      error: error.message,
+      timestamp: new Date().toISOString(),
+      environment: process.env.NODE_ENV || 'development',
+    });
+  }
+});
+
+// 404 handler for undefined routes
 app.use((req, res) => {
   if (req.originalUrl.startsWith('/api')) {
     res.status(404).json({
       error: 'Route not found',
       message: `The requested endpoint ${req.originalUrl} does not exist`,
       availableEndpoints: [
+        'GET /api/healthcheck',
         'POST /api/signup',
         'POST /api/login',
         'GET /api/me',
         'POST /api/logout',
-        'GET /api/healthcheck',
       ],
+      serverInfo: {
+        internalUrl: `http://localhost:${process.env.PORT || 3000}`,
+        internalApiUrl: `http://localhost:${process.env.PORT || 3000}/api`,
+        externalDomain: 's25cicd.xiaopotato.top',
+        externalUrl: 'http://s25cicd.xiaopotato.top',
+        externalApiUrl: 'http://s25cicd.xiaopotato.top/api',
+      },
     });
   } else {
     res.status(404).json({
       error: 'Page not found',
       message: 'The requested page does not exist',
+      frontendUrl: 'http://s25cicd.xiaopotato.top/app',
     });
   }
 });
@@ -158,13 +216,65 @@ const startServer = async () => {
     // Test database connection
     await testConnection();
 
-    const PORT = process.env.PORT || 5000;
+    const PORT = process.env.PORT || 3000;
+    const isProduction = process.env.NODE_ENV === 'production';
+
+    // Internal URLs (server runs on localhost)
+    const internalUrl = `http://localhost:${PORT}`;
+    const internalApiUrl = `${internalUrl}/api`;
+    const internalHealthUrl = `${internalApiUrl}/healthcheck`;
+
+    // External URLs (for users accessing via domain)
+    const externalUrl = 'http://s25cicd.xiaopotato.top';
+    const externalApiUrl = `${externalUrl}/api`;
+    const externalHealthUrl = `${externalApiUrl}/healthcheck`;
+    const frontendUrl =
+      process.env.CORS_ORIGIN || process.env.FRONTEND_URL || externalUrl;
 
     app.listen(PORT, () => {
-      console.log(`🚀 Server running on port ${PORT}`);
+      console.log('🚀 CanadaGoose API Server Started Successfully!');
+      console.log('='.repeat(60));
       console.log(`📝 Environment: ${process.env.NODE_ENV || 'development'}`);
-      console.log(`🔗 API URL: http://localhost:${PORT}/api`);
-      console.log(`📊 Health check: http://localhost:${PORT}/api/healthcheck`);
+      console.log(`🔌 Server Port: ${PORT}`);
+      console.log('');
+      console.log('🌐 Internal URLs (Server Access):');
+      console.log(`   Server: ${internalUrl}`);
+      console.log(`   API: ${internalApiUrl}`);
+      console.log(`   Health: ${internalHealthUrl}`);
+      console.log('');
+      console.log('🌍 External URLs (User Access):');
+      console.log(`   Frontend: ${frontendUrl}/app`);
+      console.log(`   API: ${externalApiUrl}`);
+      console.log(`   Health: ${externalHealthUrl}`);
+      console.log('='.repeat(60));
+
+      if (isProduction) {
+        console.log(
+          '✅ Production Mode: Server running on localhost, accessible via domain'
+        );
+        console.log(
+          '🔒 CORS enabled for external domain: s25cicd.xiaopotato.top'
+        );
+        console.log('📊 Enhanced logging enabled');
+      } else {
+        console.log(
+          '🛠️  Development Mode: Using localhost for both internal and external'
+        );
+        console.log('🔓 CORS enabled for development');
+        console.log('📝 Basic logging enabled');
+      }
+
+      console.log('='.repeat(60));
+      console.log('🎯 Available Endpoints:');
+      console.log(`   GET  ${internalUrl}/           - Server info`);
+      console.log(`   GET  ${internalHealthUrl}      - Health check`);
+      console.log(`   POST ${internalApiUrl}/signup  - User registration`);
+      console.log(`   POST ${internalApiUrl}/login   - User authentication`);
+      console.log(`   GET  ${internalApiUrl}/me      - Get user profile`);
+      console.log(`   POST ${internalApiUrl}/logout  - User logout`);
+      console.log('='.repeat(60));
+      console.log('💡 Note: External users access via s25cicd.xiaopotato.top');
+      console.log('   Server runs internally on localhost for security');
     });
   } catch (error) {
     console.error('❌ Failed to start server:', error);
