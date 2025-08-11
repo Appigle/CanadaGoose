@@ -1,3 +1,4 @@
+import { apiURL } from '@/config/api'
 import axios from 'axios'
 import { defineStore } from 'pinia'
 
@@ -57,7 +58,7 @@ export const useAuthStore = defineStore('auth', {
       this.loading = true
       this.error = null
       try {
-        const response = await axios.post('http://localhost:3000/api/login', {
+        const response = await axios.post(`${apiURL}/login`, {
           email: credentials.email,
           password: credentials.password,
         })
@@ -69,7 +70,8 @@ export const useAuthStore = defineStore('auth', {
           response,
         )
         saveAuthToStorage(this.token, this.user)
-      } catch (e: any) {
+      } catch (error: unknown) {
+        const e = error as { response?: { data?: { message?: string } }; message?: string }
         this.error = e.response?.data?.message || e.message || 'Login failed'
         this.token = null
         this.user = null
@@ -82,7 +84,7 @@ export const useAuthStore = defineStore('auth', {
       this.loading = true
       this.error = null
       try {
-        const response = await axios.post('http://localhost:3000/api/signup', {
+        const response = await axios.post(`${apiURL}/signup`, {
           username: data.username,
           email: data.email,
           password: data.password,
@@ -90,7 +92,11 @@ export const useAuthStore = defineStore('auth', {
         this.token = response.data.token
         this.user = response.data.user
         saveAuthToStorage(this.token, this.user)
-      } catch (e: any) {
+      } catch (error: unknown) {
+        const e = error as {
+          response?: { data?: { error?: string; message?: string } }
+          message?: string
+        }
         this.error =
           e.response?.data?.error || e.response?.data?.message || e.message || 'Signup failed'
         this.token = null

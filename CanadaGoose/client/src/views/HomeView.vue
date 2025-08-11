@@ -1,8 +1,121 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { apiURL } from '@/config/api'
+import { AlertCircle, CheckCircle, Sparkles, TrendingUp, Wallet, XCircle } from 'lucide-vue-next'
+import { onMounted, ref } from 'vue'
+
+// Health check state
+const healthStatus = ref<'loading' | 'healthy' | 'unhealthy' | 'error'>('loading')
+const healthMessage = ref('')
+const lastChecked = ref<Date | null>(null)
+
+// Health check function
+const checkHealth = async () => {
+  try {
+    healthStatus.value = 'loading'
+    healthMessage.value = 'Checking API status...'
+
+    const response = await fetch(`${apiURL}/healthcheck`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+
+    if (response.ok) {
+      const data = await response.json()
+      healthStatus.value = 'healthy'
+      healthMessage.value = data.message || 'API is healthy and responding'
+    } else {
+      healthStatus.value = 'unhealthy'
+      healthMessage.value = `API responded with status: ${response.status}`
+    }
+  } catch (error) {
+    healthStatus.value = 'error'
+    healthMessage.value = 'Unable to connect to API'
+    console.error('Health check error:', error)
+  } finally {
+    lastChecked.value = new Date()
+  }
+}
+
+// Auto-refresh health status every 30 seconds
+const startHealthMonitoring = () => {
+  checkHealth()
+  setInterval(checkHealth, 30000)
+}
+
+// Get status icon and colors
+const getStatusDisplay = () => {
+  switch (healthStatus.value) {
+    case 'healthy':
+      return {
+        icon: CheckCircle,
+        color: 'text-green-600 dark:text-green-400',
+        bgColor: 'bg-green-50 dark:bg-green-900/20',
+        borderColor: 'border-green-200 dark:border-green-800',
+      }
+    case 'unhealthy':
+      return {
+        icon: AlertCircle,
+        color: 'text-yellow-600 dark:text-yellow-400',
+        bgColor: 'bg-yellow-50 dark:bg-yellow-900/20',
+        borderColor: 'border-yellow-200 dark:border-yellow-800',
+      }
+    case 'error':
+      return {
+        icon: XCircle,
+        color: 'text-red-600 dark:text-red-400',
+        bgColor: 'bg-red-50 dark:bg-red-900/20',
+        borderColor: 'border-red-200 dark:border-red-800',
+      }
+    default:
+      return {
+        icon: AlertCircle,
+        color: 'text-gray-600 dark:text-gray-400',
+        bgColor: 'bg-gray-50 dark:bg-gray-900/20',
+        borderColor: 'border-gray-200 dark:border-gray-800',
+      }
+  }
+}
+
+onMounted(() => {
+  startHealthMonitoring()
+})
+</script>
 
 <template>
   <div class="min-h-screen">
-    <!-- Hero Section -->
+    <!-- Health Status Banner -->
+    <div class="border-b border-gray-200 dark:border-gray-700" :class="getStatusDisplay().bgColor">
+      <div class="max-w-7xl mx-auto px-4 py-3">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <component
+              :is="getStatusDisplay().icon"
+              class="h-5 w-5"
+              :class="getStatusDisplay().color"
+            />
+            <span class="text-sm font-medium" :class="getStatusDisplay().color">
+              {{ healthMessage }}
+            </span>
+          </div>
+          <div class="flex items-center space-x-4">
+            <span class="text-xs text-gray-500 dark:text-gray-400">
+              Last checked: {{ lastChecked ? lastChecked.toLocaleTimeString() : 'Never' }}
+            </span>
+            <button
+              @click="checkHealth"
+              class="text-xs px-3 py-1 rounded-md border transition-colors"
+              :class="[getStatusDisplay().borderColor, 'hover:bg-white dark:hover:bg-gray-800']"
+              :disabled="healthStatus === 'loading'"
+            >
+              {{ healthStatus === 'loading' ? 'Checking...' : 'Refresh' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Hero Section -->
     <section class="bg-gradient-to-b from-primary-50 to-white dark:from-gray-900 dark:to-gray-950">
       <div class="max-w-7xl mx-auto px-4 py-20 flex flex-col md:flex-row items-center gap-12">
