@@ -182,6 +182,27 @@ onMounted(() => {
         </div>
       </div>
     </section>
+
+    <!-- Version Showcase Section -->
+    <section
+      class="py-16 bg-gray-50 dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800"
+    >
+      <div class="max-w-4xl mx-auto px-4 text-center">
+        <h3 class="text-2xl font-bold mb-8">App Information</h3>
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 max-w-md mx-auto">
+          <div class="flex flex-col items-center space-y-4">
+            <div
+              class="w-16 h-16 bg-primary-100 dark:bg-primary-900/20 rounded-full flex items-center justify-center"
+            >
+              <Sparkles class="h-8 w-8 text-primary-600 dark:text-primary-400" />
+            </div>
+            <h4 class="text-xl font-semibold">CanadaGoose</h4>
+            <p class="text-gray-600 dark:text-gray-400 text-sm">Smart Personal Finance Tracker</p>
+            <VersionDisplay />
+          </div>
+        </div>
+      </div>
+    </section>
   </div>
 </template>
 

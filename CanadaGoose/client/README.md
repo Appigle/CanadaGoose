@@ -67,6 +67,8 @@ npm run dev
 npm run build
 ```
 
+**Note:** The build process now automatically prompts for version updates before building. See [Version Management](#version-management) section for details.
+
 ### 🧪 Run Unit Tests with [Vitest](https://vitest.dev/)
 
 ```bash
@@ -175,6 +177,60 @@ sudo chown -R nginx:nginx /var/www/app
 sudo chmod -R 755 /var/www/app
 sudo systemctl reload nginx
 ```
+
+---
+
+## 🔢 Version Management
+
+CanadaGoose includes an automated version management system that ensures proper versioning before building and deploying.
+
+### Quick Version Update
+
+```bash
+# Interactive version management (recommended)
+npm run version:interactive
+
+# Quick version update before build
+npm run build:version
+
+# Direct version updates (no prompts)
+npm run version:patch      # Increment patch version
+npm run version:minor      # Increment minor version
+npm run version:major      # Increment major version
+```
+
+### Automatic Version Checks
+
+The build process automatically prompts for version updates:
+
+```bash
+# Build with version check
+npm run build
+
+# Production build with version check
+npm run build:prod
+```
+
+### Version Types
+
+- **Major (X.0.0)**: Breaking changes, not backward compatible
+- **Minor (0.X.0)**: New features, backward compatible
+- **Patch (0.0.X)**: Bug fixes, backward compatible
+
+### Features
+
+- ✅ Automatic version incrementing
+- ✅ Git integration (commit + tag)
+- ✅ Pre-build hooks
+- ✅ Interactive menu system
+- ✅ Command line parameter support
+- ✅ CI/CD automation (silent mode, auto-confirm)
+- ✅ Custom version input
+- ✅ Git status checking
+
+For detailed documentation, see [scripts/README.md](./scripts/README.md).
+
+For command line usage examples and CI/CD integration, see [UPDATE_VERSION_COMMAND_LINE_USAGE.md](./scripts/UPDATE_VERSION_COMMAND_LINE_USAGE.md).
 
 ---
 

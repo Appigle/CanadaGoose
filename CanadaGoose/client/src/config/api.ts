@@ -27,7 +27,7 @@ export const getCurrentConfig = () => {
   if (isProduction) {
     return API_CONFIG.production
   }
-  return API_CONFIG.development
+  return API_CONFIG.production
 }
 
 // Export current configuration
