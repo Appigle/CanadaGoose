@@ -179,10 +179,10 @@ app.get('/api/version', (req, res) => {
 
 // SPA fallback route - serve index.html for all non-API routes
 // This allows Vue Router to handle client-side routing
-app.get('*', (req, res) => {
-  // Skip API routes
+app.get('*', (req, res, next) => {
+  // Skip API routes - let the 404 handler deal with them
   if (req.path.startsWith('/api')) {
-    return res.status(404).json({ error: 'API endpoint not found' });
+    return next(); // Pass to next middleware (404 handler)
   }
 
   // For all other routes, serve the SPA index.html
