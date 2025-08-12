@@ -138,7 +138,7 @@ onMounted(() => {
               to="/demo"
               class="text-lg px-6 py-3 underline hover:text-primary-600 dark:hover:text-primary-400"
             >
-              See a Demo
+              Let's Go!
             </RouterLink>
           </div>
         </div>
