@@ -7,3 +7,5 @@ docs
 Assignment3.pdf
 .github/workflows/ci-cd-local.yml
 CanadaGoose/server/.env
+key
+github-actions-key/github-actions-key

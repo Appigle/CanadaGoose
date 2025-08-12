@@ -81,13 +81,21 @@ server {
     root /var/www/app;
     index index.html;
 
-    # SPA router
-    location /app {
+    # Root location - redirect to /app
+    location = / {
+        return 301 /app;
+    }
+
+    # Root location - SPA router fallback (for any other root paths)
+    location / {
+        root /var/www;
         try_files $uri $uri/ /app/index.html;
     }
     
-    location = / {
-        return 301 /app;
+    # Specific handling for /app route
+    location /app {
+        root /var/www;
+        try_files $uri $uri/ /app/index.html;
     }
 
     # API reverse proxy

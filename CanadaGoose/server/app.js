@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
+const path = require('path');
 require('dotenv').config();
 
 // Import middlewares and routes
@@ -45,7 +46,6 @@ const corsOptions = {
 
     // Production origins
     const allowedOrigins = [
-      'http://s25cicd.xiaopotato.top',
       'https://s25cicd.xiaopotato.top',
       // Environment variables (if set)
       process.env.CORS_ORIGIN,
@@ -112,8 +112,8 @@ app.get('/', (req, res) => {
       internalUrl: `http://localhost:${process.env.PORT || 3000}`,
       internalApiUrl: `http://localhost:${process.env.PORT || 3000}/api`,
       externalDomain: 's25cicd.xiaopotato.top',
-      externalUrl: 'http://s25cicd.xiaopotato.top',
-      externalApiUrl: 'http://s25cicd.xiaopotato.top/api',
+      externalUrl: 'https://s25cicd.xiaopotato.top',
+      externalApiUrl: 'https://s25cicd.xiaopotato.top/api',
     },
   });
 });
@@ -134,8 +134,8 @@ app.get('/api/healthcheck', async (req, res) => {
         internalUrl: `http://localhost:${process.env.PORT || 3000}`,
         internalApiUrl: `http://localhost:${process.env.PORT || 3000}/api`,
         externalDomain: 's25cicd.xiaopotato.top',
-        externalUrl: 'http://s25cicd.xiaopotato.top',
-        externalApiUrl: 'http://s25cicd.xiaopotato.top/api',
+        externalUrl: 'https://s25cicd.xiaopotato.top',
+        externalApiUrl: 'https://s25cicd.xiaopotato.top/api',
       },
     });
   } catch (error) {
@@ -164,8 +164,8 @@ app.get('/api/version', (req, res) => {
         internalUrl: `http://localhost:${process.env.PORT || 3000}`,
         internalApiUrl: `http://localhost:${process.env.PORT || 3000}/api`,
         externalDomain: 's25cicd.xiaopotato.top',
-        externalUrl: 'http://s25cicd.xiaopotato.top',
-        externalApiUrl: 'http://s25cicd.xiaopotato.top/api',
+        externalUrl: 'https://s25cicd.xiaopotato.top',
+        externalApiUrl: 'https://s25cicd.xiaopotato.top/api',
       },
     });
   } catch (error) {
@@ -175,6 +175,27 @@ app.get('/api/version', (req, res) => {
       timestamp: new Date().toISOString(),
     });
   }
+});
+
+// SPA fallback route - serve index.html for all non-API routes
+// This allows Vue Router to handle client-side routing
+app.get('*', (req, res) => {
+  // Skip API routes
+  if (req.path.startsWith('/api')) {
+    return res.status(404).json({ error: 'API endpoint not found' });
+  }
+
+  // For all other routes, serve the SPA index.html
+  // The frontend will handle the routing
+  res.sendFile(path.join(__dirname, '../client/dist/index.html'), (err) => {
+    if (err) {
+      console.log('SPA fallback: index.html not found, sending 404');
+      res.status(404).json({
+        error: 'Frontend not built or not found',
+        message: 'Please ensure the frontend is built and deployed',
+      });
+    }
+  });
 });
 
 // 404 handler for undefined routes
@@ -195,15 +216,15 @@ app.use((req, res) => {
         internalUrl: `http://localhost:${process.env.PORT || 3000}`,
         internalApiUrl: `http://localhost:${process.env.PORT || 3000}/api`,
         externalDomain: 's25cicd.xiaopotato.top',
-        externalUrl: 'http://s25cicd.xiaopotato.top',
-        externalApiUrl: 'http://s25cicd.xiaopotato.top/api',
+        externalUrl: 'https://s25cicd.xiaopotato.top',
+        externalApiUrl: 'https://s25cicd.xiaopotato.top/api',
       },
     });
   } else {
     res.status(404).json({
       error: 'Page not found',
       message: 'The requested page does not exist',
-      frontendUrl: 'http://s25cicd.xiaopotato.top/app',
+      frontendUrl: 'https://s25cicd.xiaopotato.top/app',
     });
   }
 });
@@ -284,7 +305,7 @@ const startServer = async () => {
     const internalHealthUrl = `${internalApiUrl}/healthcheck`;
 
     // External URLs (for users accessing via domain)
-    const externalUrl = 'http://s25cicd.xiaopotato.top';
+    const externalUrl = 'https://s25cicd.xiaopotato.top';
     const externalApiUrl = `${externalUrl}/api`;
     const externalHealthUrl = `${externalApiUrl}/healthcheck`;
     const frontendUrl =

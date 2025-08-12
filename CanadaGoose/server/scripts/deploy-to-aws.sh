@@ -35,7 +35,7 @@ fi
 
 echo "🔧 Building for production..."
 echo "   Environment: Production"
-echo "   API Base URL: http://s25cicd.xiaopotato.top/api"
+echo "   API Base URL: https://s25cicd.xiaopotato.top/api"
 echo "   Server Port: 3000"
 
 # Update version before deployment
@@ -79,9 +79,9 @@ fi
 # Set production environment variables
 export NODE_ENV=production
 export PORT=3000
-export FRONTEND_URL=http://s25cicd.xiaopotato.top
-export CORS_ORIGIN=http://s25cicd.xiaopotato.top
-export API_BASE_URL=http://s25cicd.xiaopotato.top/api
+export FRONTEND_URL=https://s25cicd.xiaopotato.top
+export CORS_ORIGIN=https://s25cicd.xiaopotato.top
+export API_BASE_URL=https://s25cicd.xiaopotato.top/api
 
 # Verify critical environment variables
 if [ -z "$DB_HOST" ] || [ "$DB_HOST" = "localhost" ]; then
@@ -298,20 +298,20 @@ echo "🌐 Testing external API endpoints..."
 echo "   Testing from local machine to production server..."
 
 # Test health check endpoint
-if curl -s http://s25cicd.xiaopotato.top/api/healthcheck | grep -q "status"; then
+        if curl -s https://s25cicd.xiaopotato.top/api/healthcheck | grep -q "status"; then
     echo "✅ External health check endpoint is accessible"
 else
     echo "⚠️  External health check endpoint may not be accessible yet"
 fi
 
 # Test version endpoint
-if curl -s http://s25cicd.xiaopotato.top/api/version | grep -q "version"; then
+        if curl -s https://s25cicd.xiaopotato.top/api/version | grep -q "version"; then
     echo "✅ External version endpoint is accessible"
     echo "📋 Production version information:"
-    curl -s http://s25cicd.xiaopotato.top/api/version | jq -r '.version, .name, .environment' 2>/dev/null || {
-        echo "   Version: $(curl -s http://s25cicd.xiaopotato.top/api/version | grep -o '"version":"[^"]*"' | cut -d'"' -f4)"
-        echo "   Name: $(curl -s http://s25cicd.xiaopotato.top/api/version | grep -o '"name":"[^"]*"' | cut -d'"' -f4)"
-        echo "   Environment: $(curl -s http://s25cicd.xiaopotato.top/api/version | grep -o '"environment":"[^"]*"' | cut -d'"' -f4)"
+            curl -s https://s25cicd.xiaopotato.top/api/version | jq -r '.version, .name, .environment' 2>/dev/null || {
+          echo "   Version: $(curl -s https://s25cicd.xiaopotato.top/api/version | grep -o '"version":"[^"]*"' | cut -d'"' -f4)"
+          echo "   Name: $(curl -s https://s25cicd.xiaopotato.top/api/version | grep -o '"name":"[^"]*"' | cut -d'"' -f4)"
+          echo "   Environment: $(curl -s https://s25cicd.xiaopotato.top/api/version | grep -o '"environment":"[^"]*"' | cut -d'"' -f4)"
     }
 else
     echo "⚠️  External version endpoint may not be accessible yet"
@@ -332,12 +332,12 @@ echo "   ✅ API endpoints tested (healthcheck + version)"
 echo "   ✅ Database connection tested on EC2"
 echo ""
 echo "🌐 Your server is now available at:"
-echo "   API: http://s25cicd.xiaopotato.top/api"
-echo "   Health Check: http://s25cicd.xiaopotato.top/api/healthcheck"
+echo "   API: https://s25cicd.xiaopotato.top/api"
+echo "   Health Check: https://s25cicd.xiaopotato.top/api/healthcheck"
 echo ""
 echo "🔍 Test your deployment:"
-echo "   curl http://s25cicd.xiaopotato.top/api/healthcheck"
-echo "   curl http://s25cicd.xiaopotato.top/api/version"
+echo "   curl https://s25cicd.xiaopotato.top/api/healthcheck"
+echo "   curl https://s25cicd.xiaopotato.top/api/version"
 echo "   ssh -i ../../infra/ssh_key ec2-user@44.195.110.182 'pm2 status'"
 echo ""
 echo "💡 Next steps:"
