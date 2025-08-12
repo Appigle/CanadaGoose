@@ -13,6 +13,8 @@ export default defineConfig(({ mode }) => {
   const isProduction = mode === 'production'
 
   return {
+    // Set base path for production builds
+    base: isProduction ? '/app/' : '/',
     plugins: [
       vue(),
       vueJsx(),
@@ -49,6 +51,8 @@ export default defineConfig(({ mode }) => {
     server: {
       port: 5173,
       host: true,
+      // Handle SPA routing in development
+      historyApiFallback: true,
       proxy: {
         '/api': {
           target: env.VITE_API_URL || 'http://localhost:3000',

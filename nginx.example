@@ -27,10 +27,21 @@ server {
   add_header X-Content-Type-Options nosniff always;
   add_header X-XSS-Protection "1; mode=block" always;
 
-  # Frontend Application
-  location /app {
+  # Root location - redirect to /app
+  location = / {
+    return 301 /app;
+  }
+
+  # Root location - SPA router fallback (for any other root paths)
+  location / {
     root /var/www;
     try_files $uri $uri/ /app/index.html;
+  }
+
+  # Frontend Application - SPA router
+  location /app {
+    root /var/www;
+    try_files $uri $uri/ /index.html;
 
     # Cache static assets
     location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
