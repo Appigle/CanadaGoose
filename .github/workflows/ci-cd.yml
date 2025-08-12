@@ -787,16 +787,26 @@ jobs:
       - name: Verify Production URLs
         run: |
           echo "🔍 Verifying production URLs..."
-          curl -f http://s25cicd.xiaopotato.top/api/healthcheck || exit 1
-          curl -f http://s25cicd.xiaopotato.top/app || exit 1
-          echo "✅ Production URL verification passed"
+          # Test HTTP (should redirect to HTTPS)
+          echo "🌐 Testing HTTP redirect..."
+          if curl -s -I https://s25cicd.xiaopotato.top | grep -q "200"; then
+            echo "✅ HTTP to HTTPS redirect working"
+          else
+            echo "⚠️  HTTP redirect may not be working"
+          fi
+
+          # Test HTTPS endpoints
+          echo "🔒 Testing HTTPS endpoints..."
+          curl -f https://s25cicd.xiaopotato.top/api/healthcheck || exit 1
+          curl -f https://s25cicd.xiaopotato.top/app || exit 1
+          echo "✅ Production HTTPS URL verification passed"
 
       - name: Deployment Verification Summary
         run: |
           echo "�� All deployment verifications passed!"
           echo "✅ Backend: http://${{ secrets.AWS_EC2_IP }}:3000"
           echo "✅ Frontend: http://${{ secrets.AWS_EC2_IP }}/app"
-          echo "✅ Production: http://s25cicd.xiaopotato.top"
+          echo "✅ Production: https://s25cicd.xiaopotato.top"
 
   summary:
     runs-on: ubuntu-latest

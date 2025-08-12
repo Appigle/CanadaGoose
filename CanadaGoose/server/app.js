@@ -45,7 +45,6 @@ const corsOptions = {
 
     // Production origins
     const allowedOrigins = [
-      'http://s25cicd.xiaopotato.top',
       'https://s25cicd.xiaopotato.top',
       // Environment variables (if set)
       process.env.CORS_ORIGIN,
@@ -112,8 +111,8 @@ app.get('/', (req, res) => {
       internalUrl: `http://localhost:${process.env.PORT || 3000}`,
       internalApiUrl: `http://localhost:${process.env.PORT || 3000}/api`,
       externalDomain: 's25cicd.xiaopotato.top',
-      externalUrl: 'http://s25cicd.xiaopotato.top',
-      externalApiUrl: 'http://s25cicd.xiaopotato.top/api',
+      externalUrl: 'https://s25cicd.xiaopotato.top',
+      externalApiUrl: 'https://s25cicd.xiaopotato.top/api',
     },
   });
 });
@@ -134,8 +133,8 @@ app.get('/api/healthcheck', async (req, res) => {
         internalUrl: `http://localhost:${process.env.PORT || 3000}`,
         internalApiUrl: `http://localhost:${process.env.PORT || 3000}/api`,
         externalDomain: 's25cicd.xiaopotato.top',
-        externalUrl: 'http://s25cicd.xiaopotato.top',
-        externalApiUrl: 'http://s25cicd.xiaopotato.top/api',
+        externalUrl: 'https://s25cicd.xiaopotato.top',
+        externalApiUrl: 'https://s25cicd.xiaopotato.top/api',
       },
     });
   } catch (error) {
@@ -164,8 +163,8 @@ app.get('/api/version', (req, res) => {
         internalUrl: `http://localhost:${process.env.PORT || 3000}`,
         internalApiUrl: `http://localhost:${process.env.PORT || 3000}/api`,
         externalDomain: 's25cicd.xiaopotato.top',
-        externalUrl: 'http://s25cicd.xiaopotato.top',
-        externalApiUrl: 'http://s25cicd.xiaopotato.top/api',
+        externalUrl: 'https://s25cicd.xiaopotato.top',
+        externalApiUrl: 'https://s25cicd.xiaopotato.top/api',
       },
     });
   } catch (error) {
@@ -195,15 +194,15 @@ app.use((req, res) => {
         internalUrl: `http://localhost:${process.env.PORT || 3000}`,
         internalApiUrl: `http://localhost:${process.env.PORT || 3000}/api`,
         externalDomain: 's25cicd.xiaopotato.top',
-        externalUrl: 'http://s25cicd.xiaopotato.top',
-        externalApiUrl: 'http://s25cicd.xiaopotato.top/api',
+        externalUrl: 'https://s25cicd.xiaopotato.top',
+        externalApiUrl: 'https://s25cicd.xiaopotato.top/api',
       },
     });
   } else {
     res.status(404).json({
       error: 'Page not found',
       message: 'The requested page does not exist',
-      frontendUrl: 'http://s25cicd.xiaopotato.top/app',
+      frontendUrl: 'https://s25cicd.xiaopotato.top/app',
     });
   }
 });
@@ -284,7 +283,7 @@ const startServer = async () => {
     const internalHealthUrl = `${internalApiUrl}/healthcheck`;
 
     // External URLs (for users accessing via domain)
-    const externalUrl = 'http://s25cicd.xiaopotato.top';
+    const externalUrl = 'https://s25cicd.xiaopotato.top';
     const externalApiUrl = `${externalUrl}/api`;
     const externalHealthUrl = `${externalApiUrl}/healthcheck`;
     const frontendUrl =
