@@ -1,15 +1,21 @@
 {
   "name": "server",
-  "version": "1.0.0",
+  "version": "0.0.3",
   "main": "app.js",
   "directories": {
     "test": "test"
   },
   "scripts": {
-    "start": "PORT=3000 node app.js",
-    "dev": "PORT=3000 nodemon app.js",
+    "start": "NODE_ENV=production PORT=3000 node app.js",
+    "dev": "NODE_ENV=development PORT=3000 nodemon app.js",
+    "prod": "NODE_ENV=production PORT=3000 node app.js",
     "test": "NODE_ENV=test mocha test/*.js --timeout 10000 --exit",
-    "test:coverage": "NODE_ENV=test nyc mocha test/*.js --timeout 10000 --exit"
+    "test:coverage": "NODE_ENV=test nyc mocha test/*.js --timeout 10000 --exit",
+    "version:check": "node scripts/check-version.js",
+    "version:patch": "node scripts/interactive-version.js --patch --auto",
+    "version:minor": "node scripts/interactive-version.js --minor --auto",
+    "version:major": "node scripts/interactive-version.js --major --auto",
+    "version:interactive": "node scripts/interactive-version.js"
   },
   "keywords": [
     "express",

@@ -1,0 +1,52 @@
+#!/bin/bash
+
+# Deploy script for CanadaGoose Client
+# This script calls the actual deployment script from the scripts/ directory
+
+echo "🚀 CanadaGoose Client Deployment"
+echo "📁 Scripts are located in: scripts/"
+echo ""
+
+# Check if we're in the right directory
+if [ ! -f "package.json" ] || [ ! -f "vite.config.ts" ]; then
+    echo "❌ Error: package.json or vite.config.ts not found."
+    echo "Please run this script from the client directory."
+    exit 1
+fi
+
+# Check if scripts directory exists
+if [ ! -d "scripts" ]; then
+    echo "❌ Error: scripts/ directory not found."
+    echo "Please ensure the scripts directory exists."
+    exit 1
+fi
+
+echo "🛠️  Available deployment scripts:"
+echo "   scripts/build-production.sh  - Build locally only"
+echo "   scripts/deploy-to-aws.sh     - Full AWS deployment"
+echo ""
+
+# Default to full deployment if no argument provided
+if [ $# -eq 0 ]; then
+    echo "🚀 Running full AWS deployment..."
+    echo "💡 Use './deploy build' for build-only mode"
+    echo ""
+    ./scripts/deploy-to-aws.sh
+elif [ "$1" = "build" ]; then
+    echo "🏗️  Running build-only mode..."
+    ./scripts/build-production.sh
+elif [ "$1" = "aws" ]; then
+    echo "🚀 Running full AWS deployment..."
+    ./scripts/deploy-to-aws.sh
+else
+    echo "❌ Unknown option: $1"
+    echo ""
+    echo "Usage:"
+    echo "  ./deploy          - Full AWS deployment (default)"
+    echo "  ./deploy build    - Build locally only"
+    echo "  ./deploy aws      - Full AWS deployment"
+    echo ""
+    echo "Or run scripts directly:"
+    echo "  ./scripts/build-production.sh"
+    echo "  ./scripts/deploy-to-aws.sh"
+fi 

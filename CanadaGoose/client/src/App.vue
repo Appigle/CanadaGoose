@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { versionInfo } from '@/config/version'
 import { useAuthStore } from '@/stores/auth'
 import { useDark, useToggle } from '@vueuse/core'
 import { LogOut, Moon, Sun } from 'lucide-vue-next'
@@ -34,9 +35,11 @@ const navigateToProfile = () => {
       class="bg-white/90 dark:bg-gray-900/80 backdrop-blur-md sticky top-0 z-50 border-b border-gray-200 dark:border-gray-700"
     >
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16">
-        <div class="flex items-center space-x-2">
+        <div class="flex items-center space-x-3">
           <img src="/logo.png" alt="CanadaGoose" class="h-8 w-8" />
-          <span class="text-xl font-bold tracking-tight">CanadaGoose</span>
+          <div class="flex flex-col">
+            <span class="text-xl font-bold tracking-tight">CanadaGoose</span>
+          </div>
         </div>
 
         <nav class="hidden md:flex space-x-6 text-sm">
@@ -99,7 +102,13 @@ const navigateToProfile = () => {
       <div
         class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center text-sm text-gray-600 dark:text-gray-400"
       >
-        <div class="mb-4 md:mb-0">© 2025 CanadaGoose. All rights reserved.</div>
+        <div class="mb-4 md:mb-0 flex items-center space-x-2">
+          <span>© 2025 CanadaGoose. All rights reserved.</span>
+          <span class="text-xs text-gray-400 dark:text-gray-500">•</span>
+          <span class="text-xs font-mono text-gray-500 dark:text-gray-400"
+            >v{{ versionInfo.version }}</span
+          >
+        </div>
         <div class="flex space-x-4">
           <a href="#" class="hover:underline">Privacy Policy</a>
           <a href="#" class="hover:underline">Terms of Service</a>
@@ -133,5 +142,20 @@ const navigateToProfile = () => {
   .gradient-bg {
     background: linear-gradient(to bottom right, #1e293b, #0f172a);
   }
+}
+
+/* Version display animations */
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 </style>

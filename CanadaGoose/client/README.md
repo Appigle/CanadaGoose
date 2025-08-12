@@ -67,6 +67,8 @@ npm run dev
 npm run build
 ```
 
+**Note:** The build process now automatically prompts for version updates before building. See [Version Management](#version-management) section for details.
+
 ### 🧪 Run Unit Tests with [Vitest](https://vitest.dev/)
 
 ```bash
@@ -134,6 +136,101 @@ python test_signup.py
 - Vue DevTools overlays are hidden automatically to prevent click errors.
 - If `pip` isn't found, ensure your virtual environment is activated and Python is correctly installed.
 - Add more E2E tests by creating new `test_*.py` files in the `selenium/e2e/` directory.
+
+---
+
+## 🚀 Production Deployment
+
+### AWS EC2 Deployment
+
+This project includes automated deployment scripts for AWS EC2:
+
+```bash
+# Deploy to AWS production (build + deploy)
+./scripts/deploy-to-aws.sh
+
+# Build only (local)
+./scripts/build-production.sh
+```
+
+### Deployment Details
+
+- **Frontend Location**: `/var/www/app/` on EC2 instance
+- **Nginx Configuration**: Automatically configured for SPA routing
+- **Backup**: Automatic backup before deployment
+- **Permissions**: Automatically set for nginx user
+
+### Manual Deployment
+
+If you prefer manual deployment:
+
+```bash
+# Build the project
+npm run build:prod
+
+# Upload to EC2
+scp -i ../../infra/ssh_key -r dist/* ec2-user@44.195.110.182:/var/www/app/
+
+# Set permissions on EC2
+ssh -i ../../infra/ssh_key ec2-user@44.195.110.182
+sudo chown -R nginx:nginx /var/www/app
+sudo chmod -R 755 /var/www/app
+sudo systemctl reload nginx
+```
+
+---
+
+## 🔢 Version Management
+
+CanadaGoose includes an automated version management system that ensures proper versioning before building and deploying.
+
+### Quick Version Update
+
+```bash
+# Interactive version management (recommended)
+npm run version:interactive
+
+# Quick version update before build
+npm run build:version
+
+# Direct version updates (no prompts)
+npm run version:patch      # Increment patch version
+npm run version:minor      # Increment minor version
+npm run version:major      # Increment major version
+```
+
+### Automatic Version Checks
+
+The build process automatically prompts for version updates:
+
+```bash
+# Build with version check
+npm run build
+
+# Production build with version check
+npm run build:prod
+```
+
+### Version Types
+
+- **Major (X.0.0)**: Breaking changes, not backward compatible
+- **Minor (0.X.0)**: New features, backward compatible
+- **Patch (0.0.X)**: Bug fixes, backward compatible
+
+### Features
+
+- ✅ Automatic version incrementing
+- ✅ Git integration (commit + tag)
+- ✅ Pre-build hooks
+- ✅ Interactive menu system
+- ✅ Command line parameter support
+- ✅ CI/CD automation (silent mode, auto-confirm)
+- ✅ Custom version input
+- ✅ Git status checking
+
+For detailed documentation, see [scripts/README.md](./scripts/README.md).
+
+For command line usage examples and CI/CD integration, see [UPDATE_VERSION_COMMAND_LINE_USAGE.md](./scripts/UPDATE_VERSION_COMMAND_LINE_USAGE.md).
 
 ---
 

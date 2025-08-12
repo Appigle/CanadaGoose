@@ -1,0 +1,80 @@
+Your infrastructure is now deployed! Here's what to do next:
+
+1. SSH into your EC2 instance:
+   ssh -i ssh_key ec2-user@44.195.110.182
+
+2. Check the server status:
+   cd /opt/app/server-scripts
+   ./check-status.sh
+
+3. Deploy your Vue.js SPA:
+   # Upload your built app to the server
+   scp -i ssh_key your-app.tar.gz ec2-user@44.195.110.182:/tmp/canadagoose-build.tar.gz
+       
+   # SSH into the server and deploy
+   ssh -i ssh_key ec2-user@44.195.110.182
+   cd /opt/app/server-scripts
+   ./deploy-app.sh
+
+4. Access your application:
+   - Frontend: http://44.195.110.182/app
+   - API: http://44.195.110.182/api/
+   - Health: http://44.195.110.182/health
+
+5. Monitor and manage:
+   - Check status: ./check-status.sh
+   - Restart services: ./restart-services.sh
+   - View logs: pm2 logs canadagoose-api
+   - PM2 monitoring: pm2 monit
+
+6. Alternative commands (no scripts needed):
+   # Restart services
+   sudo systemctl restart nginx
+   pm2 restart all
+       
+   # Check status
+   sudo systemctl status nginx
+   pm2 status
+   pm2 logs canadagoose-api
+
+7. PM2 ecosystem management:
+   # Start with ecosystem
+   pm2 start ecosystem.config.js --env production
+       
+   # Reload configuration
+   pm2 reload ecosystem.config.js --env production
+       
+   # Save and setup startup
+   pm2 save
+   pm2 startup
+
+8. Set up Cloudflare DNS:
+   - Point s25cicd.xiaopotato.top to 44.195.110.182
+   - Enable Cloudflare proxy (orange cloud) for HTTPS termination
+
+9. Database connection details are stored in AWS Secrets Manager:
+   - Secret ARN: arn:aws:secretsmanager:us-east-1:287750019724:secret:canadagoose-prod-app-secrets-91beb838-cjV7Ty
+   - Access from EC2 instance using IAM role
+
+For more information, see the README.md and server-scripts/README.md files.
+
+EOT
+ec2_instance_id = "i-000abfd8a25583eeb"
+ec2_public_ip = "44.195.110.182"
+public_subnet_ids = [
+  "subnet-064e084a576e6e31a",
+  "subnet-024b1fa31efdd79d8",
+]
+rds_endpoint = <sensitive>
+rds_port = 3306
+s3_bucket_name = "canadagoose-scripts-prod-91beb838"
+secrets_manager_arn = <sensitive>
+secrets_manager_status = "Created new secret with unique name to avoid conflicts"
+ssh_connection = "ssh -i ssh_key ec2-user@44.195.110.182"
+vpc_id = "vpc-07bc12fd083fe2718"
+[INFO] Deployment completed successfully!
+[INFO] Next steps:
+1. SSH into your EC2 instance using the provided command
+2. Deploy your Vue.js SPA to /var/www/app/
+3. Configure Cloudflare DNS to point to the EC2 public IP
+4. Access your application at the provided URLs
