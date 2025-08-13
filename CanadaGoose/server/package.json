@@ -1,6 +1,6 @@
 {
   "name": "server",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "main": "app.js",
   "directories": {
     "test": "test"
@@ -8,6 +8,7 @@
   "scripts": {
     "start": "NODE_ENV=production PORT=3000 node app.js",
     "dev": "NODE_ENV=development PORT=3000 nodemon app.js",
+    "dev:local": "NODE_ENV=development DB_HOST=localhost DB_USER=webapp_user DB_PASSWORD=webapp_pass DB_NAME=webapp_db ENABLE_CLOUDWATCH_LOGGING=false nodemon app.js",
     "prod": "NODE_ENV=production PORT=3000 node app.js",
     "test": "NODE_ENV=test mocha test/*.js --timeout 10000 --exit",
     "test:coverage": "NODE_ENV=test nyc mocha test/*.js --timeout 10000 --exit",
@@ -27,7 +28,8 @@
   "license": "ISC",
   "description": "Express.js backend with JWT authentication and security features",
   "dependencies": {
-    "aws-sdk": "^2.1691.0",
+    "@aws-sdk/client-cloudwatch": "^3.0.0",
+    "@aws-sdk/client-cloudwatch-logs": "^3.0.0",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
