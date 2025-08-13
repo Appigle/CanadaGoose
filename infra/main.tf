@@ -381,6 +381,20 @@ resource "aws_iam_role_policy" "ec2_secrets_policy" {
           aws_s3_bucket.scripts.arn,
           "${aws_s3_bucket.scripts.arn}/*"
         ]
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "cloudwatch:PutMetricData",
+          "cloudwatch:GetMetricData",
+          "cloudwatch:ListMetrics",
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents",
+          "logs:DescribeLogGroups",
+          "logs:DescribeLogStreams"
+        ]
+        Resource = "*"
       }
     ]
   })
