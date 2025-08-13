@@ -9,3 +9,5 @@ Assignment3.pdf
 CanadaGoose/server/.env
 key
 github-actions-key/github-actions-key
+CanadaGoose/server/coverage
+*/**/coverage
