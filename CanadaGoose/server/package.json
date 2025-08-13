@@ -1,6 +1,6 @@
 {
   "name": "server",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "main": "app.js",
   "directories": {
     "test": "test"
@@ -27,6 +27,7 @@
   "license": "ISC",
   "description": "Express.js backend with JWT authentication and security features",
   "dependencies": {
+    "aws-sdk": "^2.1691.0",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
@@ -35,7 +36,9 @@
     "helmet": "^8.0.0",
     "joi": "^17.13.3",
     "jsonwebtoken": "^9.0.2",
-    "mysql2": "^3.11.4"
+    "mysql2": "^3.11.4",
+    "winston": "^3.13.0",
+    "winston-cloudwatch": "^4.0.0"
   },
   "devDependencies": {
     "chai": "^4.5.0",
