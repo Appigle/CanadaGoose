@@ -11,3 +11,4 @@ key
 github-actions-key/github-actions-key
 CanadaGoose/server/coverage
 */**/coverage
+CanadaGoose/server/.env.dev

@@ -1,3 +1,4 @@
+import { navigationMonitor } from '@/services/navigationMonitor'
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 
@@ -56,6 +57,13 @@ router.beforeEach((to, from, next) => {
 
   // Check if route requires authentication
   if (to.meta.requiresAuth && !isAuthenticated) {
+    // Log authentication redirect
+    navigationMonitor.logManualNavigation(from.path, '/login', {
+      reason: 'authentication_required',
+      intendedRoute: to.path,
+      type: 'auth_redirect',
+    })
+
     // Redirect to login if not authenticated
     next({ name: 'login', query: { redirect: to.fullPath } })
     return
@@ -63,6 +71,13 @@ router.beforeEach((to, from, next) => {
 
   // Check if route should redirect authenticated users
   if (to.meta.redirectIfAuthenticated && isAuthenticated) {
+    // Log authenticated user redirect
+    navigationMonitor.logManualNavigation(from.path, '/dashboard', {
+      reason: 'already_authenticated',
+      intendedRoute: to.path,
+      type: 'auth_redirect',
+    })
+
     // Redirect to dashboard if already authenticated
     next({ name: 'dashboard' })
     return
@@ -70,6 +85,16 @@ router.beforeEach((to, from, next) => {
 
   // Continue navigation
   next()
+})
+
+// After each route change, log the navigation
+router.afterEach((to, from) => {
+  // Log successful navigation
+  navigationMonitor.logManualNavigation(from.path, to.path, {
+    routeName: to.name,
+    routeMeta: to.meta,
+    type: 'route_complete',
+  })
 })
 
 export default router

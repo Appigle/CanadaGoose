@@ -5,6 +5,7 @@ import { createApp } from 'vue'
 
 import App from './App.vue'
 import router from './router'
+import { LoggingPlugin } from './services/logging'
 
 const app = createApp(App)
 
@@ -15,5 +16,10 @@ if (import.meta.env.VITE_DISABLE_DEVTOOLS === 'true') {
 
 app.use(createPinia())
 app.use(router)
+app.use(LoggingPlugin)
+
+// Initialize navigation monitoring
+// This will start monitoring pathname changes automatically
+console.log('🚀 Navigation monitoring initialized')
 
 app.mount('#app')

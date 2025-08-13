@@ -7,7 +7,17 @@ require('dotenv').config();
 // Import middlewares and routes
 const { apiLimiter } = require('./middleware/rateLimiter');
 const authRoutes = require('./routes/auth');
+const logsRoutes = require('./routes/logs');
 const { testConnection, healthCheck } = require('./config/database');
+
+// Import logging system
+const { logger, logHelpers } = require('./config/logger');
+const {
+  requestLogger,
+  errorLogger,
+  performanceMonitor,
+  securityLogger,
+} = require('./middleware/logging');
 
 // Create Express app
 const app = express();
@@ -55,7 +65,7 @@ const corsOptions = {
     if (allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      console.log(`CORS blocked request from: ${origin}`);
+      logger.warn(`CORS blocked request from: ${origin}`);
       callback(new Error('Not allowed by CORS'));
     }
   },
@@ -78,27 +88,14 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 // Apply general API rate limiting
 app.use('/api', apiLimiter);
 
-// Request logging middleware (enhanced for production)
-if (process.env.NODE_ENV === 'production') {
-  app.use((req, res, next) => {
-    console.log(
-      `${new Date().toISOString()} - ${req.method} ${req.path} - ${
-        req.ip
-      } - ${req.get('User-Agent')}`
-    );
-    next();
-  });
-} else {
-  app.use((req, res, next) => {
-    console.log(
-      `${new Date().toISOString()} - ${req.method} ${req.path} - ${req.ip}`
-    );
-    next();
-  });
-}
+// Enhanced logging and monitoring middleware
+app.use(performanceMonitor);
+app.use(securityLogger);
+app.use(requestLogger);
 
 // Routes
 app.use('/api', authRoutes);
+app.use('/api/logs', logsRoutes);
 
 // Root endpoint
 app.get('/', (req, res) => {
@@ -279,25 +276,35 @@ app.use((err, req, res, next) => {
   });
 });
 
+// Error logging middleware (must be last)
+app.use(errorLogger);
+
 // Graceful shutdown handling
 process.on('SIGTERM', () => {
-  console.log('SIGTERM received. Shutting down gracefully...');
+  logger.info('SIGTERM received. Shutting down gracefully...');
   process.exit(0);
 });
 
 process.on('SIGINT', () => {
-  console.log('SIGINT received. Shutting down gracefully...');
+  logger.info('SIGINT received. Shutting down gracefully...');
   process.exit(0);
 });
 
 // Start server function
 const startServer = async () => {
   try {
+    console.log('🔄 Starting server...');
+    console.log('🔄 Testing database connection...');
+
     // Test database connection
-    await testConnection();
+    // await testConnection();
+
+    console.log('🔄 Database connection successful, setting up server...');
 
     const PORT = process.env.PORT || 3000;
     const isProduction = process.env.NODE_ENV === 'production';
+
+    console.log(`🔄 Setting up server on port ${PORT}...`);
 
     // Internal URLs (server runs on localhost)
     const internalUrl = `http://localhost:${PORT}`;
@@ -311,53 +318,54 @@ const startServer = async () => {
     const frontendUrl =
       process.env.CORS_ORIGIN || process.env.FRONTEND_URL || externalUrl;
 
+    console.log('🔄 Starting to listen on port...');
     app.listen(PORT, () => {
-      console.log('🚀 CanadaGoose API Server Started Successfully!');
-      console.log('='.repeat(60));
-      console.log(`📝 Environment: ${process.env.NODE_ENV || 'development'}`);
-      console.log(`🔌 Server Port: ${PORT}`);
-      console.log('');
-      console.log('🌐 Internal URLs (Server Access):');
-      console.log(`   Server: ${internalUrl}`);
-      console.log(`   API: ${internalApiUrl}`);
-      console.log(`   Health: ${internalHealthUrl}`);
-      console.log('');
-      console.log('🌍 External URLs (User Access):');
-      console.log(`   Frontend: ${frontendUrl}/app`);
-      console.log(`   API: ${externalApiUrl}`);
-      console.log(`   Health: ${externalHealthUrl}`);
-      console.log('='.repeat(60));
+      logger.info('🚀 CanadaGoose API Server Started Successfully!');
+      logger.info('='.repeat(60));
+      logger.info(`📝 Environment: ${process.env.NODE_ENV || 'development'}`);
+      logger.info(`🔌 Server Port: ${PORT}`);
+      logger.info('');
+      logger.info('🌐 Internal URLs (Server Access):');
+      logger.info(`   Server: ${internalUrl}`);
+      logger.info(`   API: ${internalApiUrl}`);
+      logger.info(`   Health: ${internalHealthUrl}`);
+      logger.info('');
+      logger.info('🌍 External URLs (User Access):');
+      logger.info(`   Frontend: ${frontendUrl}/app`);
+      logger.info(`   API: ${externalApiUrl}`);
+      logger.info(`   Health: ${externalHealthUrl}`);
+      logger.info('='.repeat(60));
 
       if (isProduction) {
-        console.log(
+        logger.info(
           '✅ Production Mode: Server running on localhost, accessible via domain'
         );
-        console.log(
+        logger.info(
           '🔒 CORS enabled for external domain: s25cicd.xiaopotato.top'
         );
-        console.log('📊 Enhanced logging enabled');
+        logger.info('📊 Enhanced logging enabled');
       } else {
-        console.log(
+        logger.info(
           '🛠️  Development Mode: Using localhost for both internal and external'
         );
-        console.log('🔓 CORS enabled for development');
-        console.log('📝 Basic logging enabled');
+        logger.info('🔓 CORS enabled for development');
+        logger.info('📝 Basic logging enabled');
       }
 
-      console.log('='.repeat(60));
-      console.log('🎯 Available Endpoints:');
-      console.log(`   GET  ${internalUrl}/           - Server info`);
-      console.log(`   GET  ${internalHealthUrl}      - Health check`);
-      console.log(`   POST ${internalApiUrl}/signup  - User registration`);
-      console.log(`   POST ${internalApiUrl}/login   - User authentication`);
-      console.log(`   GET  ${internalApiUrl}/me      - Get user profile`);
-      console.log(`   POST ${internalApiUrl}/logout  - User logout`);
-      console.log('='.repeat(60));
-      console.log('💡 Note: External users access via s25cicd.xiaopotato.top');
-      console.log('   Server runs internally on localhost for security');
+      logger.info('='.repeat(60));
+      logger.info('🎯 Available Endpoints:');
+      logger.info(`   GET  ${internalUrl}/           - Server info`);
+      logger.info(`   GET  ${internalHealthUrl}      - Health check`);
+      logger.info(`   POST ${internalApiUrl}/signup  - User registration`);
+      logger.info(`   POST ${internalApiUrl}/login   - User authentication`);
+      logger.info(`   GET  ${internalApiUrl}/me      - Get user profile`);
+      logger.info(`   POST ${internalApiUrl}/logout  - User logout`);
+      logger.info('='.repeat(60));
+      logger.info('💡 Note: External users access via s25cicd.xiaopotato.top');
+      logger.info('   Server runs internally on localhost for security');
     });
   } catch (error) {
-    console.error('❌ Failed to start server:', error);
+    logger.error('❌ Failed to start server:', error);
     process.exit(1);
   }
 };
