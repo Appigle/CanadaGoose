@@ -8,7 +8,6 @@
   "scripts": {
     "start": "NODE_ENV=production PORT=3000 node app.js",
     "dev": "NODE_ENV=development PORT=3000 nodemon app.js",
-    "dev:local": "NODE_ENV=development DB_HOST=localhost DB_USER=webapp_user DB_PASSWORD=webapp_pass DB_NAME=webapp_db ENABLE_CLOUDWATCH_LOGGING=false nodemon app.js",
     "prod": "NODE_ENV=production PORT=3000 node app.js",
     "test": "NODE_ENV=test mocha test/*.js --timeout 10000 --exit",
     "test:coverage": "NODE_ENV=test nyc mocha test/*.js --timeout 10000 --exit",
