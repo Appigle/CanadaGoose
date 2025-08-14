@@ -8,19 +8,20 @@ A modern, secure full-stack web application built with Vue 3 frontend and Expres
 /CanadaGoose
 ├── /client                    # Vue 3 frontend (Vite + Tailwind + TypeScript)
 │   ├── /src
-│   │   ├── /views            # Vue components (Home, Dashboard, Login, Signup, Profile)
+│   │   ├── /views            # Vue components (Home, Dashboard, Login, Signup, Profile, Financial)
 │   │   ├── /components       # Reusable UI components
 │   │   ├── /stores           # Pinia state management
 │   │   ├── /router           # Vue Router configuration
+│   │   ├── /services         # API services and utilities
 │   │   └── /assets           # Styles and static assets
 │   ├── /cypress              # E2E testing with Cypress
 │   ├── /selenium             # Cross-browser testing with Selenium
 │   ├── /scripts              # Build and deployment scripts
 │   └── /dist                 # Production build output
 ├── /server                    # Express.js backend with security features
-│   ├── /routes               # API endpoints (authentication)
+│   ├── /routes               # API endpoints (auth, financial, logs)
 │   ├── /middleware           # Security middleware (auth, rate limiting, password policy)
-│   ├── /config               # Database configuration
+│   ├── /config               # Database and logging configuration
 │   ├── /database             # Database initialization scripts
 │   ├── /scripts              # Production deployment scripts
 │   ├── /serverDocs           # Server documentation and guides
@@ -111,6 +112,7 @@ A modern, secure full-stack web application built with Vue 3 frontend and Expres
 - **Database**: MySQL2 with connection pooling
 - **Testing**: Mocha + Chai + Supertest
 - **Code Coverage**: NYC (Istanbul)
+- **Logging**: CloudWatch integration
 
 ### Infrastructure & DevOps
 
@@ -118,8 +120,8 @@ A modern, secure full-stack web application built with Vue 3 frontend and Expres
 - **Compute**: EC2 with PM2 process management
 - **Database**: RDS MySQL with enhanced security
 - **Web Server**: Nginx reverse proxy
-- **CI/CD**: Automated deployment scripts
-- **Monitoring**: PM2 ecosystem + health checks
+- **CI/CD**: GitHub Actions + Automated deployment scripts
+- **Monitoring**: PM2 ecosystem + CloudWatch + health checks
 
 ## 🔐 Security Features
 
@@ -131,6 +133,16 @@ A modern, secure full-stack web application built with Vue 3 frontend and Expres
 - ✅ **Input Validation** using Joi schemas
 - ✅ **SQL Injection Protection** via parameterized queries
 - ✅ **Environment Variable Security** with .env files
+- ✅ **Account Lockout** after multiple failed login attempts
+
+## 💰 Financial Features
+
+- ✅ **Transaction Management** - Add, edit, delete financial transactions
+- ✅ **Category System** - Organize transactions by categories
+- ✅ **Date Tracking** - Record transaction dates and times
+- ✅ **Amount Validation** - Support for decimal amounts
+- ✅ **Database Persistence** - Secure MySQL storage
+- ✅ **API Endpoints** - RESTful API for financial operations
 
 ## 🚀 Deployment
 
@@ -193,6 +205,13 @@ cd server && ./scripts/build-production.sh
 - `GET /api/profile` - User profile (protected)
 - `GET /api/healthcheck` - Server health status
 
+### Financial Routes (`/api/financial`)
+
+- `GET /api/financial/transactions` - Get all transactions
+- `POST /api/financial/transactions` - Create new transaction
+- `PUT /api/financial/transactions/:id` - Update transaction
+- `DELETE /api/financial/transactions/:id` - Delete transaction
+
 ### Security Features
 
 - Rate limiting on all API endpoints
@@ -202,12 +221,12 @@ cd server && ./scripts/build-production.sh
 
 ## 🌐 Production Environment
 
-- **Domain**: s25cicd.xiaopotato.top
 - **Frontend**: Static hosting via Nginx
 - **Backend**: Node.js on EC2 with PM2
 - **Database**: RDS MySQL in private subnet
-- **SSL**: HTTPS enabled via Nginx
-- **Monitoring**: PM2 process management
+- **Web Server**: Nginx reverse proxy with SSL
+- **Monitoring**: PM2 process management + CloudWatch
+- **CI/CD**: GitHub Actions automated deployment
 
 ## 🔧 Development Scripts
 
@@ -219,6 +238,7 @@ npm run build            # Production build
 npm run build:prod       # Production build with env
 npm run test:unit        # Unit tests
 npm run cypress:open     # E2E testing
+npm run cypress:run      # Run E2E tests headlessly
 npm run deploy:aws       # Deploy to AWS
 ```
 
@@ -239,8 +259,9 @@ npm run test:coverage    # Tests with coverage
 - **Client Documentation**: `client/clientDocs/`
 - **Server Documentation**: `server/serverDocs/`
 - **Infrastructure**: `infra/README.md`
-- **Deployment**: `infra/DEPLOYMENT_SUMMARY.md`
-- **Server Management**: `infra/SERVER_MANAGEMENT.md`
+- **Deployment**: `infra/infraDocs/DEPLOYMENT_SUMMARY.md`
+- **Server Management**: `infra/infraDocs/SERVER_MANAGEMENT.md`
+- **Financial Feature**: `server/FINANCIAL_FEATURE_README.md`
 
 ## 🚨 Troubleshooting
 
@@ -258,18 +279,9 @@ npm run test:coverage    # Tests with coverage
 3. **PM2 Services**: Use `pm2 status` and `pm2 logs` for debugging
 4. **Nginx Configuration**: Verify proxy settings and SSL certificates
 
-## 🤝 Contributing
+## 🔒 Security Notes
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'feat: add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## 📄 License
-
-MIT License © 2025 CG Group
-
----
-
-**🚀 Ready to deploy?** Check out the [deployment guides](infra/DEPLOYMENT_SUMMARY.md) for detailed production setup instructions.
+- **Environment files** (`.env*`) are not tracked in Git
+- **SSH keys** and **Terraform state files** are excluded from version control
+- **Database credentials** should be managed via environment variables
+- **JWT secrets** should be unique per environment

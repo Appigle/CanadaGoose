@@ -1,28 +1,45 @@
-# 🚀 CanadaGoose - Vue 3 + Express + MySQL
+# 🚀 CanadaGoose - Full-Stack Personal Finance Tracker
 
-A fullstack web application with enhanced security and modern UX features.
+A modern, secure full-stack web application built with Vue 3 frontend and Express.js backend, featuring comprehensive CI/CD deployment automation and production-ready infrastructure.
 
 ## 🏗️ Project Structure
 
 ```
 /CanadaGoose
-  /client               # Vue 3 frontend (Vite + Tailwind + Pinia + Axios + TypeScript + ShadcnUI)
-    /selenium/e2e       # Selenium E2E tests (Python + Selenium WebDriver)
-    /cypress/e2e        # Cypress E2E tests
-  /server               # Express.js backend (JWT + bcrypt + MySQL + Rate Limiting)
-  /.github/workflows    # GitHub Actions CI/CD pipeline
-  docker-compose.yml    # Compose file for MySQL database
-  README.md             # This file
+├── /client                    # Vue 3 frontend (Vite + Tailwind + TypeScript)
+│   ├── /src
+│   │   ├── /views            # Vue components (Home, Dashboard, Login, Signup, Profile, Financial)
+│   │   ├── /components       # Reusable UI components
+│   │   ├── /stores           # Pinia state management
+│   │   ├── /router           # Vue Router configuration
+│   │   ├── /services         # API services and utilities
+│   │   └── /assets           # Styles and static assets
+│   ├── /cypress              # E2E testing with Cypress
+│   ├── /selenium             # Cross-browser testing with Selenium
+│   ├── /scripts              # Build and deployment scripts
+│   └── /dist                 # Production build output
+├── /server                    # Express.js backend with security features
+│   ├── /routes               # API endpoints (auth, financial, logs)
+│   ├── /middleware           # Security middleware (auth, rate limiting, password policy)
+│   ├── /config               # Database and logging configuration
+│   ├── /database             # Database initialization scripts
+│   ├── /scripts              # Production deployment scripts
+│   ├── /serverDocs           # Server documentation and guides
+│   └── /test                 # Backend testing (Mocha/Chai)
+├── /infra                     # Terraform infrastructure as code
+│   ├── /server-scripts       # EC2 server management scripts
+│   └── terraform files       # AWS infrastructure configuration
+└── docker-compose.yml         # Local development environment
 ```
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 
-- Node.js 20+
-- Python 3.8+ (for Selenium tests)
-- Docker & Docker Compose
-- Git
+- **Node.js 20+** (for both frontend and backend)
+- **Docker & Docker Compose** (for local database)
+- **Git** (for version control)
+- **AWS CLI** (for production deployment)
 
 ### Development Setup
 
@@ -33,10 +50,10 @@ A fullstack web application with enhanced security and modern UX features.
    cd CanadaGoose
    ```
 
-2. **Start database:**
+2. **Start local database:**
 
    ```bash
-   docker-compose up -d mysql-db
+   docker-compose up -d
    ```
 
 3. **Backend setup:**
@@ -44,6 +61,8 @@ A fullstack web application with enhanced security and modern UX features.
    ```bash
    cd server
    npm install
+   cp env.example .env
+   # Edit .env with your database credentials
    npm run dev
    ```
 
@@ -58,152 +77,233 @@ A fullstack web application with enhanced security and modern UX features.
 5. **Run tests:**
 
    ```bash
-   # Backend tests with coverage
+   # Backend tests
    cd server && npm test
 
    # Frontend unit tests
    cd ../client && npm run test:unit
 
-   # Cypress E2E tests
-   cd client && npm run cypress:open
-
-   # Selenium E2E tests (automated setup)
-   cd client/selenium/e2e
-   ./test.run.sh
+   # Frontend E2E tests
+   cd ../client && npm run cypress:open
    ```
 
 ## 🧱 Tech Stack
 
-| Layer    | Technologies                                                     |
-| -------- | ---------------------------------------------------------------- |
-| Frontend | Vue 3, Vite, Tailwind, Pinia, TypeScript, ShadcnUI, Lucide Icons |
-| Backend  | Node.js, Express, JWT, bcrypt, express-rate-limit                |
-| Database | MySQL (Enhanced Schema)                                          |
-| Testing  | Mocha/Chai, Cypress, Selenium (Python + WebDriver)               |
-| DevOps   | Docker, Docker Compose, GitHub Actions                           |
+### Frontend (Vue 3 + TypeScript)
 
-## 🔐 Features
+- **Framework**: Vue 3 with Composition API
+- **Build Tool**: Vite 7.0
+- **Language**: TypeScript 5.8
+- **Styling**: Tailwind CSS 3.4 + PostCSS
+- **State Management**: Pinia 3.0
+- **Routing**: Vue Router 4.5
+- **HTTP Client**: Axios 1.10
+- **Icons**: Lucide Vue Next
+- **Testing**: Vitest (unit), Cypress (E2E), Selenium (cross-browser)
+- **Code Quality**: ESLint, Prettier, TypeScript strict mode
 
-- ✅ Secure authentication with JWT
-- ✅ Rate limiting (5 attempts/15min)
-- ✅ Password policies (8+ chars, complexity)
-- ✅ Dark/Light theme toggle
-- ✅ PWA with offline support
-- ✅ Real-time form validation
-- ✅ Beautiful UI with ShadcnUI
-- ✅ Automated testing & CI/CD
+### Backend (Node.js + Express)
 
-## 🧪 Testing Strategy
+- **Runtime**: Node.js 20+
+- **Framework**: Express.js 4.21
+- **Authentication**: JWT + bcryptjs
+- **Security**: Helmet, CORS, Rate Limiting
+- **Validation**: Joi schema validation
+- **Database**: MySQL2 with connection pooling
+- **Testing**: Mocha + Chai + Supertest
+- **Code Coverage**: NYC (Istanbul)
+- **Logging**: CloudWatch integration
 
-### **Unit Tests**
+### Infrastructure & DevOps
 
-- **Backend**: Mocha + Chai with coverage reporting
-- **Frontend**: Vitest for Vue component testing
+- **Infrastructure**: Terraform + AWS
+- **Compute**: EC2 with PM2 process management
+- **Database**: RDS MySQL with enhanced security
+- **Web Server**: Nginx reverse proxy
+- **CI/CD**: GitHub Actions + Automated deployment scripts
+- **Monitoring**: PM2 ecosystem + CloudWatch + health checks
 
-### **E2E Tests**
+## 🔐 Security Features
 
-- **Cypress**: Modern browser testing with real-time feedback
-- **Selenium**: Cross-browser compatibility testing with Python
+- ✅ **JWT Authentication** with secure token management
+- ✅ **Password Policies** (8+ chars, complexity requirements)
+- ✅ **Rate Limiting** (5 attempts/15min for API endpoints)
+- ✅ **Security Headers** via Helmet middleware
+- ✅ **CORS Protection** with configurable origins
+- ✅ **Input Validation** using Joi schemas
+- ✅ **SQL Injection Protection** via parameterized queries
+- ✅ **Environment Variable Security** with .env files
+- ✅ **Account Lockout** after multiple failed login attempts
 
-### **CI/CD Pipeline**
+## 💰 Financial Features
 
-- **GitHub Actions**: Automated testing on every push/PR
-- **Test Stages**: Source scanning, build verification, comprehensive testing
-- **Quality Gates**: All tests must pass before deployment
+- ✅ **Transaction Management** - Add, edit, delete financial transactions
+- ✅ **Category System** - Organize transactions by categories
+- ✅ **Date Tracking** - Record transaction dates and times
+- ✅ **Amount Validation** - Support for decimal amounts
+- ✅ **Database Persistence** - Secure MySQL storage
+- ✅ **API Endpoints** - RESTful API for financial operations
 
-## 🚀 CI/CD Pipeline
+### Frontend Screenshots
 
-The project includes a robust GitHub Actions workflow (`.github/workflows/ci-cd.yml`) that:
+![Homepage](./screenshots/FE-HomePage.png)
+_Main application homepage with modern UI design_
 
-1. **Source Stage**: Code scanning and security analysis
-2. **Build Stage**: Dependency installation and build verification
-3. **Test Stage**:
-   - Backend unit tests with coverage
-   - Frontend unit tests
-   - Cypress E2E tests
-   - Selenium E2E tests (with automated service orchestration)
-4. **Deploy Stage**: Production deployment (when tests pass)
+![Financial Dashboard](./screenshots/FE-Financial.png)
+_Financial transactions management interface_
 
-### **Selenium E2E Testing in CI/CD**
+![Add Transaction](./screenshots/FE-AddNewTransaction.png)
+_Add new financial transaction form_
 
-- Automated MySQL database setup
-- Backend server startup with health checks
-- Frontend server startup with health checks
-- Cross-browser testing with Chrome/Chromedriver
-- Proper cleanup and resource management
+![Login Page](./screenshots/FE-Login.png)
+_Secure user authentication interface_
 
-## 📁 Key Files
-
-- `docker-compose.yml` - MySQL database configuration
-- `client/selenium/e2e/test.run.sh` - Selenium test orchestration script
-- `server/app.js` - Main backend application
-- `client/src/App.vue` - Main frontend application
-- `.github/workflows/ci-cd.yml` - CI/CD pipeline configuration
-
-## 🔧 Environment Variables
-
-### **Backend (.env)**
-
-```bash
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_USER=root
-DB_PASSWORD=rootpass
-DB_NAME=webapp_db
-JWT_SECRET=your-secret-key
-NODE_ENV=development
-```
-
-### **Frontend**
-
-- Backend API URL: `http://localhost:3000/api`
-- Development server: `http://localhost:5173`
-
-## 🐛 Troubleshooting
-
-### **Port Conflicts**
-
-If you get "EADDRINUSE" errors:
-
-```bash
-# Kill processes using ports 3000 or 5173
-lsof -ti :3000 | xargs kill -9
-lsof -ti :5173 | xargs kill -9
-```
-
-### **Database Connection Issues**
-
-```bash
-# Restart MySQL container
-docker-compose restart mysql-db
-
-# Check container status
-docker-compose ps
-```
-
-### **Selenium Test Issues**
-
-```bash
-# Ensure Python virtual environment is activated
-cd client/selenium/e2e
-source venv/bin/activate
-
-# Check if all services are running
-curl http://localhost:3000/api/healthcheck
-curl http://localhost:5173
-```
-
-## 📊 Test Coverage
-
-- **Backend**: Comprehensive API endpoint testing
-- **Frontend**: Component rendering and user interaction testing
-- **E2E**: Full user journey testing across multiple browsers
-- **Integration**: Database operations and API communication
+![Signup Page](./screenshots/FE-SignUp.png)
+_User registration form_
 
 ## 🚀 Deployment
 
-The application is ready for deployment to:
+### Local Development
 
-- **AWS** (Full-stack)
+```bash
+# Frontend
+cd client && npm run dev
 
-All deployment configurations are included in the CI/CD pipeline for automated releases.
+# Backend
+cd server && npm run dev
+
+# Database
+docker-compose up -d
+```
+
+### Production Build
+
+```bash
+# Frontend production build
+cd client && npm run build:prod
+
+# Backend production package
+cd server && ./scripts/build-production.sh
+```
+
+### AWS Production Deployment
+
+```bash
+# Automated full deployment
+cd server && ./scripts/deploy-to-aws.sh
+
+# Manual deployment
+cd server && ./scripts/build-production.sh
+# Then upload and deploy on EC2
+```
+
+## 🧪 Testing Strategy
+
+### Frontend Testing
+
+- **Unit Tests**: Vitest with Vue Test Utils
+- **E2E Tests**: Cypress for modern browsers
+- **Cross-Browser**: Selenium for comprehensive browser coverage
+- **Coverage**: Built-in coverage reporting
+
+### Backend Testing
+
+- **Unit Tests**: Mocha + Chai
+- **Integration Tests**: Supertest for API endpoints
+- **Coverage**: NYC for code coverage analysis
+- **Database Tests**: Connection and health check validation
+
+## 📊 API Endpoints
+
+### Authentication Routes (`/api`)
+
+- `POST /api/register` - User registration
+- `POST /api/login` - User authentication
+- `GET /api/profile` - User profile (protected)
+- `GET /api/healthcheck` - Server health status
+
+### Financial Routes (`/api/financial`)
+
+- `GET /api/financial/transactions` - Get all transactions
+- `POST /api/financial/transactions` - Create new transaction
+- `PUT /api/financial/transactions/:id` - Update transaction
+- `DELETE /api/financial/transactions/:id` - Delete transaction
+
+### Security Features
+
+- Rate limiting on all API endpoints
+- JWT token validation middleware
+- Password complexity enforcement
+- CORS protection for production
+
+## 🌐 Production Environment
+
+- **Frontend**: Static hosting via Nginx
+- **Backend**: Node.js on EC2 with PM2
+- **Database**: RDS MySQL in private subnet
+- **Web Server**: Nginx reverse proxy with SSL
+- **Monitoring**: PM2 process management + CloudWatch
+- **CI/CD**: GitHub Actions automated deployment
+
+### AWS Infrastructure Screenshots
+
+![EC2 Dashboard](./screenshots/AWS-EC2-Dashboard.png)
+_EC2 instance management and monitoring_
+
+![RDS MySQL](./screenshots/AWS-RDS-MySQL.png)
+_RDS MySQL database instance configuration_
+
+![S3 Buckets](./screenshots/AWS-S3-Buckets.png)
+_S3 storage buckets for application assets_
+
+![CloudWatch Dashboard](./screenshots/AWS-CloudWatch-Dashboard.png)
+_CloudWatch monitoring and observability dashboard_
+
+![CloudWatch Log Groups](./screenshots/AWS-CloudWatch-LogGroup.png)
+_CloudWatch log groups for application logging_
+
+![CloudFlare DNS](./screenshots/CloudFlare-DNS.png)
+_DNS configuration and domain management_
+
+### CI/CD Pipeline Screenshots
+
+![GitHub Actions Pipeline](./screenshots/Github-Action-Pipeline.png)
+_GitHub Actions CI/CD pipeline overview_
+
+![GitHub Actions Pipeline Detail](./screenshots/Github-Action-Pipeline-detail.png)
+_Detailed view of GitHub Actions workflow execution_
+
+## 🔧 Development Scripts
+
+### Frontend Scripts
+
+```bash
+npm run dev              # Development server
+npm run build            # Production build
+npm run build:prod       # Production build with env
+npm run test:unit        # Unit tests
+npm run cypress:open     # E2E testing
+npm run cypress:run      # Run E2E tests headlessly
+npm run deploy:aws       # Deploy to AWS
+```
+
+### Backend Scripts
+
+```bash
+npm run dev              # Development server
+npm run start            # Production server
+npm run test             # Run tests
+npm run test:coverage    # Tests with coverage
+./start-dev-server.sh    # Local development setup
+./scripts/build-production.sh    # Create deployment package
+./scripts/deploy-to-aws.sh      # Full AWS deployment
+```
+
+## 📚 Documentation
+
+- **Client Documentation**: `client/clientDocs/`
+- **Server Documentation**: `server/serverDocs/`
+- **Infrastructure**: `infra/README.md`
+- **Deployment**: `infra/infraDocs/DEPLOYMENT_SUMMARY.md`
+- **Server Management**: `infra/infraDocs/SERVER_MANAGEMENT.md`
+- **Financial Feature**: `server/FINANCIAL_FEATURE_README.md`
