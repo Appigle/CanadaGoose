@@ -47,8 +47,11 @@ const navigateToProfile = () => {
           <RouterLink to="/" class="hover:text-primary-600 dark:hover:text-primary-400"
             >Home</RouterLink
           >
-          <RouterLink to="/features" class="hover:text-primary-600 dark:hover:text-primary-400"
-            >Features</RouterLink
+          <RouterLink
+            to="/financial"
+            v-if="isAuthenticated"
+            class="hover:text-primary-600 dark:hover:text-primary-400"
+            >Financial</RouterLink
           >
           <RouterLink
             to="/dashboard"
