@@ -131,10 +131,10 @@ jobs:
       mysql:
         image: mysql:8.0.36
         env:
-          MYSQL_ROOT_PASSWORD: rootpass
+          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD || 'rootpass' }}
           MYSQL_DATABASE: webapp_db
           MYSQL_USER: webapp_user
-          MYSQL_PASSWORD: webapp_pass
+          MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD || 'webapp_pass' }}
         ports:
           - 3306:3306
         options: >-
@@ -252,9 +252,9 @@ jobs:
           DB_HOST: 127.0.0.1
           DB_PORT: 3306
           DB_USER: root
-          DB_PASSWORD: rootpass
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD || 'rootpass' }}
           DB_NAME: webapp_db
-          JWT_SECRET: chiputaobutuputaopibuchiputaopibuchiputaodaotuputaopi
+          JWT_SECRET: ${{ secrets.JWT_SECRET || 'your-jwt-secret-here' }}
         run: |
           cd CanadaGoose/server
           npm run test:coverage || npm test
@@ -307,9 +307,9 @@ jobs:
           DB_HOST: 127.0.0.1
           DB_PORT: 3306
           DB_USER: root
-          DB_PASSWORD: rootpass
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD || 'rootpass' }}
           DB_NAME: webapp_db
-          JWT_SECRET: chiputaobutuputaopibuchiputaopibuchiputaodaotuputaopi
+          JWT_SECRET: ${{ secrets.JWT_SECRET || 'your-jwt-secret-here' }}
           BACKEND_PORT: 3000
           NODE_ENV: test
         run: |
@@ -333,9 +333,9 @@ jobs:
           export DB_HOST=127.0.0.1
           export DB_PORT=3306
           export DB_USER=root
-          export DB_PASSWORD=rootpass
+          export DB_PASSWORD=${DB_PASSWORD:-rootpass}
           export DB_NAME=webapp_db
-          export JWT_SECRET=chiputaobutuputaopibuchiputaopibuchiputaodaotuputaopi
+          export JWT_SECRET=${JWT_SECRET:-your-jwt-secret-here}
           export NODE_ENV=test
 
           npm run dev &

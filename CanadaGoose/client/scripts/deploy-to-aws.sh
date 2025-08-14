@@ -7,7 +7,7 @@ echo "🏗️  For build-only (local), use: ./build-production.sh"
 echo ""
 
 # Variables
-EC2_IP="44.195.110.182"
+EC2_IP="${EC2_IP:-your-ec2-ip-here}"
 SSH_KEY="../../infra/ssh_key"
 CLIENT_DIR="CanadaGoose/client"
 
@@ -20,14 +20,14 @@ fi
 
 echo "🔧 Building for production..."
 echo "   Environment: Production"
-echo "   API Base URL: https://s25cicd.xiaopotato.top/api"
-echo "   Frontend URL: https://s25cicd.xiaopotato.top/app"
+echo "   API Base URL: https://your-domain-here/api"
+echo "   Frontend URL: https://your-domain-here/app"
 
 # Set production environment variables
 export NODE_ENV=production
-export VITE_API_BASE_URL=https://s25cicd.xiaopotato.top
-export VITE_API_URL=https://s25cicd.xiaopotato.top/api
-export VITE_FRONTEND_URL=https://s25cicd.xiaopotato.top
+export VITE_API_BASE_URL=https://your-domain-here
+export VITE_API_URL=https://your-domain-here/api
+export VITE_FRONTEND_URL=https://your-domain-here
 
 # Clean previous builds
 echo "🧹 Cleaning previous builds..."
@@ -211,15 +211,15 @@ echo "   ✅ Permissions set correctly"
 echo "   ✅ Nginx restarted/reloaded"
 echo ""
 echo "🌐 Your application is now available at:"
-        echo "   Frontend: https://s25cicd.xiaopotato.top/app"
-        echo "   API: https://s25cicd.xiaopotato.top/api"
+        echo "   Frontend: https://your-domain-here/app"
+echo "   API: https://your-domain-here/api"
         echo ""
         echo "🔍 Test your deployment:"
-        echo "   curl https://s25cicd.xiaopotato.top/app"
-        echo "   curl https://s25cicd.xiaopotato.top/api/healthcheck"
+        echo "   curl https://your-domain-here/app"
+echo "   curl https://your-domain-here/api/healthcheck"
         echo ""
         echo "💡 Next steps:"
-        echo "   1. Test the frontend at https://s25cicd.xiaopotato.top/app"
+        echo "   1. Test the frontend at https://your-domain-here/app"
 echo "   2. Verify API calls work correctly"
 echo "   3. Check browser console for any errors"
 echo "   4. Monitor server logs if needed"

@@ -6,7 +6,7 @@ const dbConfig = {
   host: process.env.DB_HOST || 'localhost',
   port: parseInt(process.env.DB_PORT) || 3306,
   user: process.env.DB_USER || 'webapp_user',
-  password: process.env.DB_PASSWORD || 'webapp_pass',
+  password: process.env.DB_PASSWORD || 'your-db-password-here',
   database: process.env.DB_NAME || 'webapp_db',
 
   // Connection pool settings for production

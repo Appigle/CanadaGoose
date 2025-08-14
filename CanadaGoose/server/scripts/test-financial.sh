@@ -32,7 +32,7 @@ NODE_ENV=test
 DB_HOST=localhost
 DB_PORT=3306
 DB_USER=webapp_user
-DB_PASSWORD=webapp_pass
+DB_PASSWORD=${DB_PASSWORD:-your-db-password-here}
 DB_NAME=webapp_db
 JWT_SECRET=test-secret-key-for-testing-only
 EOF
@@ -49,7 +49,7 @@ fi
 
 # Check if database is accessible
 echo -e "${YELLOW}🔌 Testing database connection...${NC}"
-if ! mysql -h"${DB_HOST:-localhost}" -P"${DB_PORT:-3306}" -u"${DB_USER:-webapp_user}" -p"${DB_PASSWORD:-webapp_pass}" -e "SELECT 1;" > /dev/null 2>&1; then
+if ! mysql -h"${DB_HOST:-localhost}" -P"${DB_PORT:-3306}" -u"${DB_USER:-webapp_user}" -p"${DB_PASSWORD:-your-db-password-here}" -e "SELECT 1;" > /dev/null 2>&1; then
     echo -e "${RED}❌ Cannot connect to database. Please ensure MySQL is running.${NC}"
     echo -e "${YELLOW}💡 You can start the local database with: docker-compose up -d${NC}"
     exit 1
@@ -59,7 +59,7 @@ echo -e "${GREEN}✅ Database connection successful${NC}"
 
 # Check if financial_transactions table exists
 echo -e "${YELLOW}🔍 Checking if financial_transactions table exists...${NC}"
-TABLE_EXISTS=$(mysql -h"${DB_HOST:-localhost}" -P"${DB_PORT:-3306}" -u"${DB_USER:-webapp_user}" -p"${DB_PASSWORD:-webapp_pass}" -s -N -e "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '${DB_NAME:-webapp_db}' AND table_name = 'financial_transactions';")
+TABLE_EXISTS=$(mysql -h"${DB_HOST:-localhost}" -P"${DB_PORT:-3306}" -u"${DB_USER:-webapp_user}" -p"${DB_PASSWORD:-your-db-password-here}" -s -N -e "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '${DB_NAME:-webapp_db}' AND table_name = 'financial_transactions';")
 
 if [ "$TABLE_EXISTS" -eq 0 ]; then
     echo -e "${YELLOW}⚠️  financial_transactions table not found. Running migration...${NC}"

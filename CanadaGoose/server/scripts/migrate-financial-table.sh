@@ -26,7 +26,7 @@ source .env
 DB_HOST=${DB_HOST:-localhost}
 DB_PORT=${DB_PORT:-3306}
 DB_USER=${DB_USER:-webapp_user}
-DB_PASSWORD=${DB_PASSWORD:-webapp_pass}
+DB_PASSWORD=${DB_PASSWORD:-your-db-password-here}
 DB_NAME=${DB_NAME:-webapp_db}
 
 echo -e "${YELLOW}📊 Database: ${DB_HOST}:${DB_PORT}/${DB_NAME}${NC}"

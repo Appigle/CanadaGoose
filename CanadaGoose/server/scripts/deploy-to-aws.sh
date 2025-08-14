@@ -7,7 +7,7 @@ echo "🏗️  For build-only (local), use: ./build-production.sh"
 echo ""
 
 # Variables
-EC2_IP="44.195.110.182"
+EC2_IP="${EC2_IP:-your-ec2-ip-here}"
 SSH_KEY="../../infra/ssh_key"
 SERVER_DIR="CanadaGoose/server"
 
@@ -35,7 +35,7 @@ fi
 
 echo "🔧 Building for production..."
 echo "   Environment: Production"
-echo "   API Base URL: https://s25cicd.xiaopotato.top/api"
+echo "   API Base URL: https://your-domain-here/api"
 echo "   Server Port: 3000"
 
 # Update version before deployment
@@ -79,9 +79,9 @@ fi
 # Set production environment variables
 export NODE_ENV=production
 export PORT=3000
-export FRONTEND_URL=https://s25cicd.xiaopotato.top
-export CORS_ORIGIN=https://s25cicd.xiaopotato.top
-export API_BASE_URL=https://s25cicd.xiaopotato.top/api
+export FRONTEND_URL=https://your-domain-here
+export CORS_ORIGIN=https://your-domain-here
+export API_BASE_URL=https://your-domain-here/api
 
 # Verify critical environment variables
 if [ -z "$DB_HOST" ] || [ "$DB_HOST" = "localhost" ]; then

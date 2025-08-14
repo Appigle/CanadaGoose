@@ -18,9 +18,9 @@ export const API_CONFIG = {
 
   // Production: domain for production deployment
   production: {
-    baseURL: 'https://s25cicd.xiaopotato.top',
-    apiURL: 'https://s25cicd.xiaopotato.top/api',
-    frontendURL: 'https://s25cicd.xiaopotato.top',
+    baseURL: import.meta.env.VITE_API_BASE_URL || 'https://your-domain-here',
+    apiURL: import.meta.env.VITE_API_URL || 'https://your-domain-here/api',
+    frontendURL: import.meta.env.VITE_FRONTEND_URL || 'https://your-domain-here',
   },
 }
 

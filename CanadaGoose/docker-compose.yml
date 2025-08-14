@@ -3,10 +3,10 @@ services:
   mysql-db:
     image: mysql:8.0
     environment:
-      MYSQL_ROOT_PASSWORD: rootpass
-      MYSQL_DATABASE: webapp_db
-      MYSQL_USER: webapp_user
-      MYSQL_PASSWORD: webapp_pass
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpass}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-webapp_db}
+      MYSQL_USER: ${MYSQL_USER:-webapp_user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-webapp_pass}
     ports:
       - '3306:3306'
     volumes:

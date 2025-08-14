@@ -16,3 +16,9 @@ CanadaGoose/server/.env.dev
 .env.*
 ./**/.env.*
 ./**/.env
+.env.local
+
+# Sensitive files
+*FIX_SUMMARY*
+*example
+*.example

@@ -37,9 +37,9 @@ rm -rf dist/
 
 # Set production environment
 export NODE_ENV=production
-export VITE_API_BASE_URL=http://s25cicd.xiaopotato.top
-export VITE_API_URL=http://s25cicd.xiaopotato.top/api
-export VITE_FRONTEND_URL=http://s25cicd.xiaopotato.top
+export VITE_API_BASE_URL=http://your-domain-here
+export VITE_API_URL=http://your-domain-here/api
+export VITE_FRONTEND_URL=http://your-domain-here
 
 echo "🔧 Production Configuration:"
 echo "   Environment: $NODE_ENV"
@@ -71,11 +71,11 @@ echo "   1. Upload the dist/ folder to your server"
 echo "   2. Place it in /var/www/app/ on your EC2 instance"
 echo "   3. Ensure Nginx is configured to serve from this directory"
 echo "   4. Restart Nginx to serve new files"
-echo "   5. Test your application at http://s25cicd.xiaopotato.top/app"
+echo "   5. Test your application at http://your-domain-here/app"
 echo ""
 echo "💡 Manual Deployment Commands:"
-echo "   scp -i ../../infra/ssh_key -r dist/* ec2-user@44.195.110.182:/var/www/app/"
-echo "   ssh -i ../../infra/ssh_key ec2-user@44.195.110.182 'sudo systemctl restart nginx'"
+echo "   scp -i ../../infra/ssh_key -r dist/* ec2-user@your-ec2-ip-here:/var/www/app/"
+echo "   ssh -i ../../infra/ssh_key ec2-user@your-ec2-ip-here 'sudo systemctl restart nginx'"
 echo ""
 echo "🚀 OR use automated deployment:"
 echo "   ./deploy-to-aws.sh"
@@ -96,6 +96,6 @@ tar -czf canadagoose-client-prod.tar.gz \
 echo "✅ Deployment package created: canadagoose-client-prod.tar.gz"
 echo ""
 echo "🎯 You can now upload this package to your server:"
-echo "   scp -i ../../infra/ssh_key canadagoose-client-prod.tar.gz ec2-user@44.195.110.182:/tmp/"
-echo "   ssh -i ../../infra/ssh_key ec2-user@44.195.110.182 'cd /opt/app && tar -xzf /tmp/canadagoose-client.tar.gz'"
-echo "   ssh -i ../../infra/ssh_key ec2-user@44.195.110.182 'sudo systemctl restart nginx'" 
+echo "   scp -i ../../infra/ssh_key canadagoose-client-prod.tar.gz ec2-user@your-ec2-ip-here:/tmp/"
+echo "   ssh -i ../../infra/ssh_key ec2-user@your-ec2-ip-here 'cd /opt/app && tar -xzf /tmp/canadagoose-client.tar.gz'"
+echo "   ssh -i ../../infra/ssh_key ec2-user@your-ec2-ip-here 'sudo systemctl restart nginx'" 
