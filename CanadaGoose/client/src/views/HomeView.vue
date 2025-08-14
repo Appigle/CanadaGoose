@@ -129,13 +129,13 @@ onMounted(() => {
           </p>
           <div class="mt-8 flex space-x-4">
             <RouterLink
-              to="/signup"
+              to="/financial"
               class="btn btn-primary px-6 py-3 rounded-lg text-white text-lg bg-primary-600 hover:bg-primary-700"
             >
               Get Started Free
             </RouterLink>
             <RouterLink
-              to="/demo"
+              to="/financial"
               class="text-lg px-6 py-3 underline hover:text-primary-600 dark:hover:text-primary-400"
             >
               Let's Go!
