@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import NavigationAnalytics from '@/components/NavigationAnalytics.vue'
 import { versionInfo } from '@/config/version'
 import { useAuthStore } from '@/stores/auth'
 import { useDark, useToggle } from '@vueuse/core'
@@ -47,8 +46,11 @@ const navigateToProfile = () => {
           <RouterLink to="/" class="hover:text-primary-600 dark:hover:text-primary-400"
             >Home</RouterLink
           >
-          <RouterLink to="/features" class="hover:text-primary-600 dark:hover:text-primary-400"
-            >Features</RouterLink
+          <RouterLink
+            to="/financial"
+            v-if="isAuthenticated"
+            class="hover:text-primary-600 dark:hover:text-primary-400"
+            >Financial</RouterLink
           >
           <RouterLink
             to="/dashboard"
@@ -119,7 +121,7 @@ const navigateToProfile = () => {
     </footer>
 
     <!-- Navigation Analytics Component -->
-    <NavigationAnalytics />
+    <!-- <NavigationAnalytics /> -->
   </div>
 </template>
 

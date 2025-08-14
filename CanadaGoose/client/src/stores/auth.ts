@@ -18,16 +18,16 @@ export type AuthState = {
 
 function saveAuthToStorage(token: string | null, user: User | null) {
   if (token && user) {
-    localStorage.setItem('auth_token', token)
+    localStorage.setItem('token', token)
     localStorage.setItem('auth_user', JSON.stringify(user))
   } else {
-    localStorage.removeItem('auth_token')
+    localStorage.removeItem('token')
     localStorage.removeItem('auth_user')
   }
 }
 
 function loadAuthFromStorage(): { token: string | null; user: User | null } {
-  const token = localStorage.getItem('auth_token')
+  const token = localStorage.getItem('token')
   const userStr = localStorage.getItem('auth_user')
   let user: User | null = null
   if (userStr) {

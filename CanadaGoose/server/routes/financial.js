@@ -170,69 +170,81 @@ router.get('/transactions', authenticateToken, async (req, res) => {
     const userId = req.user.userId;
     const { type, start_date, end_date, limit = 50, offset = 0 } = req.query;
 
-    let sql = 'SELECT * FROM financial_transactions WHERE user_id = ?';
+    // Validate/sanitize pagination
+    const limitNum = Math.max(1, Math.min(parseInt(limit, 10) || 50, 100));
+    const offsetNum = Math.max(0, parseInt(offset, 10) || 0);
+
+    // Validate dates (YYYY-MM-DD)
+    const isDate = (s) =>
+      typeof s === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s);
+    const startDate = isDate(start_date) ? start_date : null;
+    const endDate = isDate(end_date) ? end_date : null;
+
+    if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
+      return res.status(400).json({
+        error: 'Invalid date range',
+        message: '`start_date` must be <= `end_date`',
+      });
+    }
+
+    // Build SQL + params
+    let sql = 'SELECT * FROM `financial_transactions` WHERE `user_id` = ?';
     const params = [userId];
 
-    // Add filters if provided
-    if (type) {
-      sql += ' AND type = ?';
+    if (type && ['income', 'expenditure'].includes(type)) {
+      sql += ' AND `type` = ?';
       params.push(type);
     }
-
-    if (start_date) {
-      sql += ' AND transaction_date >= ?';
-      params.push(start_date);
+    if (startDate) {
+      sql += ' AND `transaction_date` >= ?';
+      params.push(startDate);
+    }
+    if (endDate) {
+      sql += ' AND `transaction_date` <= ?';
+      params.push(endDate);
     }
 
-    if (end_date) {
-      sql += ' AND transaction_date <= ?';
-      params.push(end_date);
-    }
-
-    // Add ordering and pagination
-    sql += ' ORDER BY transaction_date DESC, created_at DESC LIMIT ? OFFSET ?';
-    params.push(parseInt(limit), parseInt(offset));
+    // IMPORTANT: inline LIMIT/OFFSET (placeholders can break in some clients)
+    sql += ` ORDER BY \`transaction_date\` DESC, \`created_at\` DESC LIMIT ${limitNum} OFFSET ${offsetNum}`;
 
     const transactions = await query(sql, params);
 
-    // Get total count for pagination
+    // Count with the same filters
     let countSql =
-      'SELECT COUNT(*) as total FROM financial_transactions WHERE user_id = ?';
+      'SELECT COUNT(*) AS total FROM `financial_transactions` WHERE `user_id` = ?';
     const countParams = [userId];
 
-    if (type) {
-      countSql += ' AND type = ?';
+    if (type && ['income', 'expenditure'].includes(type)) {
+      countSql += ' AND `type` = ?';
       countParams.push(type);
     }
-
-    if (start_date) {
-      countSql += ' AND transaction_date >= ?';
-      countParams.push(start_date);
+    if (startDate) {
+      countSql += ' AND `transaction_date` >= ?';
+      countParams.push(startDate);
+    }
+    if (endDate) {
+      countSql += ' AND `transaction_date` <= ?';
+      countParams.push(endDate);
     }
 
-    if (end_date) {
-      countSql += ' AND transaction_date <= ?';
-      countParams.push(end_date);
-    }
-
-    const [countResult] = await query(countSql, countParams);
-    const total = countResult.total;
+    const [countRow] = await query(countSql, countParams);
+    const total = Number(countRow?.total || 0);
 
     res.json({
       transactions,
       pagination: {
         total,
-        limit: parseInt(limit),
-        offset: parseInt(offset),
-        hasMore: total > parseInt(offset) + transactions.length,
+        limit: limitNum,
+        offset: offsetNum,
+        hasMore: total > offsetNum + transactions.length,
       },
     });
   } catch (error) {
     logger.error('Error fetching financial transactions', {
-      error: error.message,
-      userId: req.user?.userId,
+      err: error.message,
+      stack: error.stack,
+      route: '/transactions',
     });
-
     res.status(500).json({
       error: 'Internal server error',
       message: 'Failed to fetch financial transactions',
@@ -246,25 +258,44 @@ router.get('/summary', authenticateToken, async (req, res) => {
     const userId = req.user.userId;
     const { start_date, end_date } = req.query;
 
+    // Validate date parameters
+    const isDate = (s) =>
+      typeof s === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s);
+    const startDate = isDate(start_date) ? start_date : null;
+    const endDate = isDate(end_date) ? end_date : null;
+
+    if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
+      return res.status(400).json({
+        error: 'Invalid date range',
+        message: '`start_date` must be <= `end_date`',
+      });
+    }
+
     let dateFilter = '';
     const params = [userId];
 
-    if (start_date && end_date) {
-      dateFilter = 'AND transaction_date BETWEEN ? AND ?';
-      params.push(start_date, end_date);
+    if (startDate && endDate) {
+      dateFilter = 'AND `transaction_date` BETWEEN ? AND ?';
+      params.push(startDate, endDate);
+    } else if (startDate) {
+      dateFilter = 'AND `transaction_date` >= ?';
+      params.push(startDate);
+    } else if (endDate) {
+      dateFilter = 'AND `transaction_date` <= ?';
+      params.push(endDate);
     }
 
     // Get income and expenditure totals
     const summarySql = `
       SELECT 
-        type,
-        SUM(amount) as total_amount,
-        currency,
+        \`type\`,
+        SUM(\`amount\`) as total_amount,
+        \`currency\`,
         COUNT(*) as transaction_count
-      FROM financial_transactions 
-      WHERE user_id = ? ${dateFilter}
-      GROUP BY type, currency
-      ORDER BY type, currency
+      FROM \`financial_transactions\` 
+      WHERE \`user_id\` = ? ${dateFilter}
+      GROUP BY \`type\`, \`currency\`
+      ORDER BY \`type\`, \`currency\`
     `;
 
     const summary = await query(summarySql, params);
@@ -272,14 +303,14 @@ router.get('/summary', authenticateToken, async (req, res) => {
     // Get top categories
     const topCategoriesSql = `
       SELECT 
-        type,
-        subtype,
-        SUM(amount) as total_amount,
-        currency,
+        \`type\`,
+        \`subtype\`,
+        SUM(\`amount\`) as total_amount,
+        \`currency\`,
         COUNT(*) as transaction_count
-      FROM financial_transactions 
-      WHERE user_id = ? ${dateFilter}
-      GROUP BY type, subtype, currency
+      FROM \`financial_transactions\` 
+      WHERE \`user_id\` = ? ${dateFilter}
+      GROUP BY \`type\`, \`subtype\`, \`currency\`
       ORDER BY total_amount DESC
       LIMIT 10
     `;
@@ -292,8 +323,9 @@ router.get('/summary', authenticateToken, async (req, res) => {
     });
   } catch (error) {
     logger.error('Error fetching financial summary', {
-      error: error.message,
-      userId: req.user?.userId,
+      err: error.message,
+      stack: error.stack,
+      route: '/summary',
     });
 
     res.status(500).json({

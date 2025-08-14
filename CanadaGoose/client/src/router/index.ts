@@ -1,6 +1,12 @@
 import { navigationMonitor } from '@/services/navigationMonitor'
 import { createRouter, createWebHistory } from 'vue-router'
+import AboutView from '../views/AboutView.vue'
+import DashboardView from '../views/DashboardView.vue'
+import FinancialView from '../views/FinancialView.vue'
 import HomeView from '../views/HomeView.vue'
+import LoginView from '../views/LoginView.vue'
+import ProfileView from '../views/ProfileView.vue'
+import SignupView from '../views/SignupView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -9,82 +15,53 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: HomeView,
-      meta: { requiresAuth: false },
-    },
-    {
-      path: '/login',
-      name: 'login',
-      component: () => import('@/views/LoginView.vue'),
-      meta: { requiresAuth: false, redirectIfAuthenticated: true },
-    },
-    {
-      path: '/signup',
-      name: 'signup',
-      component: () => import('@/views/SignupView.vue'),
-      meta: { requiresAuth: false, redirectIfAuthenticated: true },
-    },
-    {
-      path: '/dashboard',
-      name: 'dashboard',
-      component: () => import('@/views/DashboardView.vue'),
-      meta: { requiresAuth: true },
-    },
-    {
-      path: '/profile',
-      name: 'profile',
-      component: () => import('@/views/ProfileView.vue'),
-      meta: { requiresAuth: true },
     },
     {
       path: '/about',
       name: 'about',
-      component: () => import('@/views/AboutView.vue'),
-      meta: { requiresAuth: false },
+      component: AboutView,
     },
-    // Catch-all route for 404 errors
     {
-      path: '/:pathMatch(.*)*',
-      name: 'NotFound',
-      component: () => import('@/views/NotFoundView.vue'),
-      meta: { requiresAuth: false },
+      path: '/dashboard',
+      name: 'dashboard',
+      component: DashboardView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/login',
+      name: 'login',
+      component: LoginView,
+    },
+    {
+      path: '/signup',
+      name: 'signup',
+      component: SignupView,
+    },
+    {
+      path: '/profile',
+      name: 'profile',
+      component: ProfileView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/financial',
+      name: 'financial',
+      component: FinancialView,
+      meta: { requiresAuth: true },
     },
   ],
 })
 
-// Route guards for authentication
+// Navigation guard for authentication
 router.beforeEach((to, from, next) => {
-  const isAuthenticated = !!localStorage.getItem('auth_token')
+  const token = localStorage.getItem('token')
+  const isAuthenticated = !!token
 
-  // Check if route requires authentication
   if (to.meta.requiresAuth && !isAuthenticated) {
-    // Log authentication redirect
-    navigationMonitor.logManualNavigation(from.path, '/login', {
-      reason: 'authentication_required',
-      intendedRoute: to.path,
-      type: 'auth_redirect',
-    })
-
-    // Redirect to login if not authenticated
-    next({ name: 'login', query: { redirect: to.fullPath } })
-    return
+    next('/login')
+  } else {
+    next()
   }
-
-  // Check if route should redirect authenticated users
-  if (to.meta.redirectIfAuthenticated && isAuthenticated) {
-    // Log authenticated user redirect
-    navigationMonitor.logManualNavigation(from.path, '/dashboard', {
-      reason: 'already_authenticated',
-      intendedRoute: to.path,
-      type: 'auth_redirect',
-    })
-
-    // Redirect to dashboard if already authenticated
-    next({ name: 'dashboard' })
-    return
-  }
-
-  // Continue navigation
-  next()
 })
 
 // After each route change, log the navigation
