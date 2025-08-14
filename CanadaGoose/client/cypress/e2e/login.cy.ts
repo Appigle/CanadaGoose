@@ -37,10 +37,17 @@ describe('Login Page', () => {
   })
 
   it('logs in successfully and redirects to dashboard', () => {
-    // Mock token response and intercept
+    // Mock token response and intercept with complete user data
     cy.intercept('POST', '**/api/login', {
       statusCode: 200,
-      body: { token: 'mock-jwt-token' },
+      body: {
+        token: 'mock-jwt-token',
+        user: {
+          id: 1,
+          username: 'testuser',
+          email: 'user@example.com',
+        },
+      },
     }).as('loginSuccess')
 
     cy.get('[data-cy=email-input]').type('user@example.com')
@@ -49,9 +56,14 @@ describe('Login Page', () => {
 
     cy.wait('@loginSuccess')
 
+    // Wait for success message to appear
     cy.get('[data-cy=success-message]').should('be.visible').and('contain', 'Login successful')
 
-    // Optionally verify redirect
+    // Wait for the redirect to complete (the component has a 1-second delay)
+    // Wait a bit longer than the 1-second delay to ensure redirect completes
+    cy.wait(1500)
+
+    // Now verify the redirect happened
     cy.url().should('include', '/dashboard')
   })
 })
