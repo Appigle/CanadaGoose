@@ -8,6 +8,7 @@ require('dotenv').config();
 const { apiLimiter } = require('./middleware/rateLimiter');
 const authRoutes = require('./routes/auth');
 const logsRoutes = require('./routes/logs');
+const financialRoutes = require('./routes/financial');
 const { testConnection, healthCheck } = require('./config/database');
 
 // Import logging system
@@ -96,6 +97,7 @@ app.use(requestLogger);
 // Routes
 app.use('/api', authRoutes);
 app.use('/api/logs', logsRoutes);
+app.use('/api/financial', financialRoutes);
 
 // Root endpoint
 app.get('/', (req, res) => {
