@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import NavigationAnalytics from '@/components/NavigationAnalytics.vue'
 import { versionInfo } from '@/config/version'
 import { useAuthStore } from '@/stores/auth'
 import { useDark, useToggle } from '@vueuse/core'
@@ -122,7 +121,7 @@ const navigateToProfile = () => {
     </footer>
 
     <!-- Navigation Analytics Component -->
-    <NavigationAnalytics />
+    <!-- <NavigationAnalytics /> -->
   </div>
 </template>
 

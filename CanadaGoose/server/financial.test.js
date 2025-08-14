@@ -1,6 +1,6 @@
 const request = require('supertest');
-const app = require('../app');
-const { query } = require('../config/database');
+const app = require('./app');
+const { query } = require('./config/database');
 const { expect } = require('chai');
 
 describe('Financial Transactions API', () => {
