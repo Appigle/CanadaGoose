@@ -24,7 +24,7 @@ const checkHealth = async () => {
     if (response.ok) {
       const data = await response.json()
       healthStatus.value = 'healthy'
-      healthMessage.value = data.message || 'API is healthy and responding'
+      healthMessage.value = data.message || 'The Server is healthy and responding'
     } else {
       healthStatus.value = 'unhealthy'
       healthMessage.value = `API responded with status: ${response.status}`
