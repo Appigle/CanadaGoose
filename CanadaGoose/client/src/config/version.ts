@@ -10,5 +10,5 @@ export const versionInfo = {
   version: APP_VERSION,
   name: APP_NAME,
   buildDate: BUILD_DATE,
-  tech: 'Vue 3 + TypeScript + Vite'
+  tech: 'Vue 3 + TypeScript + Vite',
 }
