@@ -2,7 +2,7 @@
 import { versionInfo } from '@/config/version'
 import { useAuthStore } from '@/stores/auth'
 import { useDark, useToggle } from '@vueuse/core'
-import { LogOut, Moon, Sun } from 'lucide-vue-next'
+import { Github, LogOut, Moon, Sun } from 'lucide-vue-next'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 
@@ -61,6 +61,14 @@ const navigateToProfile = () => {
         </nav>
 
         <div class="flex items-center space-x-4">
+          <a
+            href="https://github.com/Appigle/CanadaGoose"
+            target="_blank"
+            class="hover:underline flex items-center"
+          >
+            <Github class="h-5 w-5 mr-1 bg-white dark:bg-gray-900" />
+            GitHub
+          </a>
           <button
             @click="toggleDark()"
             class="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
@@ -116,6 +124,14 @@ const navigateToProfile = () => {
           <a href="#" class="hover:underline">Privacy Policy</a>
           <a href="#" class="hover:underline">Terms of Service</a>
           <a href="#" class="hover:underline">Support</a>
+          <a
+            href="https://github.com/Appigle/CanadaGoose"
+            target="_blank"
+            class="hover:underline flex items-center"
+          >
+            <Github class="h-5 w-5 mr-1 dark:bg-white bg-gray-900" />
+            GitHub
+          </a>
         </div>
       </div>
     </footer>
